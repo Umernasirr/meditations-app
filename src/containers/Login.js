@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import {
   Flex,
@@ -21,6 +22,13 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const history = useHistory();
+
+  const { email, password } = formData;
 
   const handleForgetPassword = () => {};
 
@@ -92,23 +100,15 @@ const Login = () => {
 
         <Box my={3} />
 
-        <Flex w="full" justify="space-around">
+        <Flex w="full" justify="center">
+          <Text pr={1}>Don't have an account?</Text>
           <Button
             variant="link"
             _focus={{ outline: "none" }}
             color="facebook.300"
-            onClick={handleForgetPassword}
+            onClick={() => history.push("/signup")}
           >
-            Forget Password
-          </Button>
-
-          <Button
-            variant="link"
-            _focus={{ outline: "none" }}
-            color="facebook.300"
-            onClick={handleCreateAccount}
-          >
-            Create an Account
+            Signup
           </Button>
         </Flex>
       </Flex>

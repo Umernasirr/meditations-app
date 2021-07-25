@@ -116,7 +116,9 @@ const Signup = () => {
             .then(() => {
               saveUser(createdUser)
                 .then(() => {
+                  // history.push("/login");
                   console.log("user created");
+                  // setErrors([]);
                 })
                 .catch((err) => {
                   setErrors(errors.concat(err));
