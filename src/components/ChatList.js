@@ -1,11 +1,9 @@
 import { Flex, Text, Image, Box } from "@chakra-ui/react";
 import React from "react";
 
-import { CHATS } from "../constants";
-
 const groupImg = process.env.PUBLIC_URL + "/group_icon.png";
 
-const ChatList = ({ setSelectedChat }) => {
+const ChatList = ({ rooms, setSelectedChat }) => {
   return (
     <Flex
       direction="column"
@@ -24,7 +22,7 @@ const ChatList = ({ setSelectedChat }) => {
         },
       }}
     >
-      {CHATS.map((chat) => (
+      {rooms.map((chat) => (
         <Flex
           _hover={{ backgroundColor: "whiteAlpha.700", cursor: "pointer" }}
           onClick={() => setSelectedChat(chat)}
@@ -52,7 +50,9 @@ const ChatList = ({ setSelectedChat }) => {
           <Box ml={3}>
             <Text fontWeight="bold">{chat.title}</Text>
             <Text fontSize="0.8em" color="gray.500">
-              {chat.messages[chat.messages.length - 1].message.slice(0, 40)}
+              {chat.message
+                ? chat.messages[chat.messages.length - 1].message.slice(0, 40)
+                : "New Chat"}
             </Text>
           </Box>
         </Flex>
