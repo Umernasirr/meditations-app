@@ -1,10 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  useHistory,
-} from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 import { Flex } from "@chakra-ui/layout";
 import { useDispatch, useSelector } from "react-redux";
 import firebase from "firebase";
@@ -15,11 +10,12 @@ import Dashboard from "./containers/Dashboard";
 import Footer from "./components/Footer";
 import Rooms from "./containers/Rooms";
 import { setUser, clearUser } from "./redux/user";
+import MeditateRoom from "./containers/MeditateRoom";
 
 function App() {
   const history = useHistory();
   const dispatch = useDispatch();
-  const currentUser = useSelector((state) => state.user);
+  const { currentUser } = useSelector((state) => state.user);
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -47,6 +43,8 @@ function App() {
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
         <Route exact path="/rooms" component={Rooms} />
+        <Route exact path="/meditate" component={MeditateRoom} />
+
         <Footer />
       </Switch>
     </Flex>

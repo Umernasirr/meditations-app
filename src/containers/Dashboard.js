@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Flex, Box, Text, Grid, Button, Image } from "@chakra-ui/react";
 import Header from "../components/Header";
 const meditationCoverImg = process.env.PUBLIC_URL + "/meditation_cover.png";
 
 const Dashboard = () => {
+  const [showJoinModal, setShowJoinModal] = useState(false);
   return (
     <Flex flex bg="gray.100" w="full" h="full" direction="column">
-      <Header />
+      <Header setShowJoinModal={setShowJoinModal} />
 
       <Box mt={24} />
 

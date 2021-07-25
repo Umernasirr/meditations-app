@@ -140,7 +140,7 @@ const Signup = () => {
     <Flex h="full" w="full" bg="gray.900" align="center" justify="center">
       <Flex
         w="30%"
-        // h="50%"
+        h="60%"
         bg="white"
         align="center"
         justify="center"
@@ -242,7 +242,7 @@ const Signup = () => {
           SignUp
         </Button>
 
-        <Box my={1} />
+        <Box my={2} />
 
         <Flex w="full" justify="center">
           <Text pr={1}>Already have an account?</Text>

@@ -69,6 +69,7 @@ const Login = () => {
     <Flex h="full" w="full" bg="gray.900" align="center" justify="center">
       <Flex
         w="30%"
+        h="60%"
         bg="white"
         align="center"
         justify="center"
@@ -125,7 +126,7 @@ const Login = () => {
           Login
         </Button>
 
-        <Box my={3} />
+        <Box my={2} />
 
         <Flex w="full" justify="center">
           <Text pr={1}>Don't have an account?</Text>

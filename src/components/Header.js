@@ -1,23 +1,31 @@
 import { Flex, Text, Box, Button, Image } from "@chakra-ui/react";
 import React, { Fragment } from "react";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import firebase from "../firebase.js";
 import { clearUser } from "../redux/user.js";
 const logoImg = process.env.PUBLIC_URL + "/logo.png";
 
-const Header = () => {
+const Header = ({ setShowJoinModal }) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
+
+  const handleJoinRoom = () => {
+    if (currentUser) {
+      setShowJoinModal(true);
+    } else {
+      history.push("/login");
+    }
+  };
   const logoutHandler = () => {
     firebase
       .auth()
       .signOut()
-      .then(function() {
+      .then(function () {
         dispatch(clearUser);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error);
         // An error happened.
       });
@@ -35,12 +43,17 @@ const Header = () => {
         <Image src={logoImg} width="40px" height="50px" />
         <Box mx={2} />
         <Text fontSize="md" fontWeight="medium" letterSpacing="1.2">
-          Meditation App
+          <Link href="/">Meditation App</Link>
         </Text>
       </Flex>
 
       <Flex align="center" px={12}>
-        <Button variant="link" _focus={{ outline: "none" }} color="white">
+        <Button
+          variant="link"
+          _focus={{ outline: "none" }}
+          color="white"
+          onClick={() => handleJoinRoom()}
+        >
           Join A Room
         </Button>
         {!currentUser && (

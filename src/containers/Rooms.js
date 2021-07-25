@@ -23,22 +23,33 @@ import ChatList from "../components/ChatList";
 import ChatContainer from "../components/ChatContainer";
 import { AiOutlineMessage } from "react-icons/ai";
 import firebase from "../firebase";
+import { useSelector } from "react-redux";
 
 const Rooms = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedChat, setSelectedChat] = useState(undefined);
   const [roomName, setRoomName] = useState("");
+
   const [rooms, setRooms] = useState(undefined);
+  const { currentUser } = useSelector((state) => state.user);
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
   const roomsRef = firebase.firestore().collection("rooms");
   const handleRoomCreate = () => {
+    setShowModal(false);
     roomsRef
       .doc()
       .set({
         title: roomName,
-        messages: [],
+        members: [currentUser],
       })
-      .then((res) => setShowModal(false));
+      .then((res) => console.log("Room Created"));
+
+    setRoomName("");
+  };
+
+  const handleJoinRoom = () => {
+    setRoomName("");
   };
 
   useEffect(() => {
@@ -47,14 +58,53 @@ const Rooms = () => {
       snapshot.forEach((doc) => {
         roomsData.push({ ...doc.data(), id: doc.id });
       });
+
+      console.log(roomsData);
       setRooms(roomsData);
     });
   }, []);
 
   return (
     <Flex h="100vh" w="100vw" bg="gray.100" direction="column">
-      <Header />
+      <Header setShowJoinModal={setShowJoinModal} />
+      {/* Join Room Model */}
+      <Modal
+        size="xl"
+        isOpen={showJoinModal}
+        onClose={() => setShowJoinModal(false)}
+      >
+        <ModalContent>
+          <ModalHeader>Join an Existing Room</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <InputGroup>
+              <InputLeftElement>
+                <AiOutlineMessage />
+              </InputLeftElement>
+              <Input
+                value={roomName}
+                onChange={(e) => setRoomName(e.target.value)}
+                placeholder="Enter Room Name"
+              />
+            </InputGroup>
+          </ModalBody>
 
+          <ModalFooter>
+            <Button
+              colorScheme="red"
+              mr={3}
+              onClick={() => setShowJoinModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button colorScheme="facebook" onClick={() => handleJoinRoom()}>
+              Join Room
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Create New Room Modal */}
       <Modal size="xl" isOpen={showModal} onClose={() => setShowModal(false)}>
         <ModalContent>
           <ModalHeader>New Room</ModalHeader>
@@ -107,13 +157,13 @@ const Rooms = () => {
 
         <Box mt={4} />
 
-        <Grid w="full" h="full" templateColumns="repeat(4, 1fr)" gap={6}>
-          <GridItem colSpan={1} h="95%" bg="gray.100" boxShadow="base">
+        <Grid w="full" h="full" templateColumns="repeat(4, 1fr)" gap={2}>
+          <GridItem colSpan={1} h="95%" bg="gray.100" boxShadow="sm">
             {rooms && (
               <ChatList rooms={rooms} setSelectedChat={setSelectedChat} />
             )}
           </GridItem>
-          <GridItem colSpan={3} h="95%" boxShadow="base">
+          <GridItem colSpan={3} h="95%" boxShadow="sm">
             {selectedChat && (
               <ChatContainer
                 selectedChat={selectedChat}

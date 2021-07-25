@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Flex,
   Text,
@@ -10,39 +10,56 @@ import {
   InputLeftElement,
   Button,
   Spacer,
+  IconButton,
+  Tooltip,
 } from "@chakra-ui/react";
 import {
   AiOutlineCloseCircle,
   AiOutlineMessage,
-  AiOutlineSearch,
-} from "react-icons/ai";
+  AiOutlineArrowRight,
+  BiGroup,
+} from "react-icons/all";
 
 import firebase from "../firebase";
+import { useSelector } from "react-redux";
 
 const groupImg = process.env.PUBLIC_URL + "/group_icon.png";
 
 const ChatContainer = ({ selectedChat, setSelectedChat }) => {
   const [messages, setMessages] = useState([]);
   const [messageTxt, setMessageTxt] = useState("");
+  const { currentUser } = useSelector((state) => state.user);
 
   const roomsRef = firebase.firestore().collection("rooms");
 
-  const handleSearch = () => {};
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const handleStartMeditation = () => {
+    // scrollToBottom();
+  };
 
   const handleCloseChat = () => {
     setSelectedChat(undefined);
   };
 
   const handleSubmitMessage = () => {
-    roomsRef.doc(selectedChat.id).collection("messages").add({
-      messageTxt,
-      createdAt: new Date().getTime(),
-      user_id: 99,
-      //  user: {
-      //    _id: currentUser.uid,
-      //    email: currentUser.email,
-      //  },
-    });
+    if (messageTxt !== "") {
+      roomsRef.doc(selectedChat.id).collection("messages").add({
+        messageTxt,
+        createdAt: new Date().getTime(),
+        user_id: currentUser.uid,
+        //  user: {
+        //    _id: currentUser.uid,
+        //    email: currentUser.email,
+        //  },
+      });
+      scrollToBottom();
+      setMessageTxt("");
+    }
   };
 
   useEffect(() => {
@@ -57,7 +74,6 @@ const ChatContainer = ({ selectedChat, setSelectedChat }) => {
 
           const data = {
             id: doc.id,
-            text: "",
             createdAt: new Date().getTime(),
             ...firebaseData,
           };
@@ -66,6 +82,7 @@ const ChatContainer = ({ selectedChat, setSelectedChat }) => {
         });
 
         setMessages(messages);
+        scrollToBottom();
       });
 
     return () => messagesListener();
@@ -102,13 +119,37 @@ const ChatContainer = ({ selectedChat, setSelectedChat }) => {
         </Flex>
 
         <Flex>
-          <Icon onClick={handleSearch} fontSize={24} as={AiOutlineSearch} />
+          <Tooltip label="Start the Meditation" aria-label="A tooltip">
+            <IconButton
+              onClick={handleStartMeditation}
+              variant="ghost"
+              _focus={{ outline: "none" }}
+              fontSize={24}
+              icon={<AiOutlineArrowRight />}
+            />
+          </Tooltip>
+
           <Box mx={2} />
-          <Icon
-            onClick={handleCloseChat}
-            fontSize={24}
-            as={AiOutlineCloseCircle}
-          />
+          <Tooltip label="View Members" aria-label="A tooltip">
+            <IconButton
+              onClick={handleStartMeditation}
+              variant="ghost"
+              _focus={{ outline: "none" }}
+              fontSize={24}
+              icon={<BiGroup />}
+            />
+          </Tooltip>
+
+          <Box mx={2} />
+          <Tooltip label="Exit Group" aria-label="A tooltip">
+            <IconButton
+              onClick={handleCloseChat}
+              variant="ghost"
+              _focus={{ outline: "none" }}
+              fontSize={24}
+              icon={<AiOutlineCloseCircle />}
+            />
+          </Tooltip>
         </Flex>
       </Flex>
 
@@ -133,12 +174,14 @@ const ChatContainer = ({ selectedChat, setSelectedChat }) => {
         }}
       >
         {messages.length > 0 &&
-          messages.map((msg) => (
+          messages.map((msg, index) => (
             <Flex
-              justify={msg.user_id === 99 ? "flex-end" : "flex-start"}
+              justify={
+                msg.user_id === currentUser?.uid ? "flex-end" : "flex-start"
+              }
               my={2}
             >
-              {msg.user_id !== 99 && (
+              {msg.user_id !== currentUser?.uid && (
                 <Box borderRadius={"50%"} borderWidth={2} p={1}>
                   <Image
                     src={groupImg}
@@ -153,14 +196,16 @@ const ChatContainer = ({ selectedChat, setSelectedChat }) => {
                 p={3}
                 px={4}
                 borderRadius={24}
-                bg={msg.user_id === 99 ? "gray.200" : "linkedin.100"}
+                bg={
+                  msg.user_id === currentUser?.uid ? "gray.200" : "linkedin.100"
+                }
                 color="blackAlpha.800"
               >
                 {msg.messageTxt}
               </Text>
               <Box mx={1} />
 
-              {msg.user_id === 99 && (
+              {msg.user_id === currentUser?.uid && (
                 <Box borderRadius={"50%"} borderWidth={2} p={1}>
                   <Image
                     src={groupImg}
@@ -170,6 +215,8 @@ const ChatContainer = ({ selectedChat, setSelectedChat }) => {
                   />
                 </Box>
               )}
+
+              {index === messages.length - 1 && <div ref={messagesEndRef} />}
             </Flex>
           ))}
       </Flex>
