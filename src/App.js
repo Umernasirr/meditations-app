@@ -11,7 +11,7 @@ function App() {
     <Router>
       <Flex h="100vh" w="100vw">
         <Switch>
-          <Route path="/" component={Dashboard} />
+          <Route exact path="/" component={Dashboard} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={Signup} />
         </Switch>

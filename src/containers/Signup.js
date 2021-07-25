@@ -154,13 +154,13 @@ const Signup = () => {
           <Text color="red.700">{passwordError}</Text>
         </Flex>
 
-        <Box my={3} />
+        <Box my={2} />
 
         <Button width="120px" colorScheme="facebook" onClick={handleSubmit}>
           SignUp
         </Button>
 
-        <Box my={3} />
+        <Box my={1} />
 
         <Flex w="full" justify="center">
           <Text pr={1}>Already have an account?</Text>
