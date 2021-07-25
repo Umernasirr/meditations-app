@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Flex,
   Text,
@@ -16,10 +16,16 @@ import {
   AiOutlineMessage,
   AiOutlineSearch,
 } from "react-icons/ai";
+
+import firebase from "../firebase";
+
 const groupImg = process.env.PUBLIC_URL + "/group_icon.png";
 
 const ChatContainer = ({ selectedChat, setSelectedChat }) => {
+  const [messages, setMessages] = useState([]);
   const [messageTxt, setMessageTxt] = useState("");
+
+  const roomsRef = firebase.firestore().collection("rooms");
 
   const handleSearch = () => {};
 
@@ -27,7 +33,44 @@ const ChatContainer = ({ selectedChat, setSelectedChat }) => {
     setSelectedChat(undefined);
   };
 
-  const handleSubmitMessage = () => {};
+  const handleSubmitMessage = () => {
+    roomsRef.doc(selectedChat.id).collection("messages").add({
+      messageTxt,
+      createdAt: new Date().getTime(),
+      user_id: 99,
+      //  user: {
+      //    _id: currentUser.uid,
+      //    email: currentUser.email,
+      //  },
+    });
+  };
+
+  useEffect(() => {
+    setMessages([]);
+    const messagesListener = roomsRef
+      .doc(selectedChat.id)
+      .collection("messages")
+      .orderBy("createdAt", "asc")
+      .onSnapshot((querySnapshot) => {
+        const messages = querySnapshot.docs.map((doc) => {
+          const firebaseData = doc.data();
+
+          const data = {
+            id: doc.id,
+            text: "",
+            createdAt: new Date().getTime(),
+            ...firebaseData,
+          };
+
+          return data;
+        });
+
+        setMessages(messages);
+      });
+
+    return () => messagesListener();
+  }, [selectedChat]);
+
   return (
     <Flex direction="column" bg="white" w="full" h="full">
       {/* Top Row */}
@@ -51,6 +94,10 @@ const ChatContainer = ({ selectedChat, setSelectedChat }) => {
           <Box mx={2} />
           <Text fontWeight="bold" color="blackAlpha.700">
             {selectedChat.title}
+          </Text>
+
+          <Text fontWeight="bold" color="blackAlpha.700">
+            {" - " + selectedChat.id}
           </Text>
         </Flex>
 
@@ -85,42 +132,46 @@ const ChatContainer = ({ selectedChat, setSelectedChat }) => {
           },
         }}
       >
-        {selectedChat.messages.map((msg) => (
-          <Flex justify={msg.user_id === 99 ? "flex-end" : "flex-start"} my={2}>
-            {msg.user_id !== 99 && (
-              <Box borderRadius={"50%"} borderWidth={2} p={1}>
-                <Image
-                  src={groupImg}
-                  width="40px"
-                  height="40px"
-                  borderRadius={"40%"}
-                />
-              </Box>
-            )}
-            <Box mx={1} />
-            <Text
-              p={3}
-              px={4}
-              borderRadius={24}
-              bg={msg.user_id === 99 ? "gray.200" : "linkedin.100"}
-              color="blackAlpha.800"
+        {messages.length > 0 &&
+          messages.map((msg) => (
+            <Flex
+              justify={msg.user_id === 99 ? "flex-end" : "flex-start"}
+              my={2}
             >
-              {msg.message}
-            </Text>
-            <Box mx={1} />
+              {msg.user_id !== 99 && (
+                <Box borderRadius={"50%"} borderWidth={2} p={1}>
+                  <Image
+                    src={groupImg}
+                    width="40px"
+                    height="40px"
+                    borderRadius={"40%"}
+                  />
+                </Box>
+              )}
+              <Box mx={1} />
+              <Text
+                p={3}
+                px={4}
+                borderRadius={24}
+                bg={msg.user_id === 99 ? "gray.200" : "linkedin.100"}
+                color="blackAlpha.800"
+              >
+                {msg.messageTxt}
+              </Text>
+              <Box mx={1} />
 
-            {msg.user_id === 99 && (
-              <Box borderRadius={"50%"} borderWidth={2} p={1}>
-                <Image
-                  src={groupImg}
-                  width="40px"
-                  height="40px"
-                  borderRadius={"40%"}
-                />
-              </Box>
-            )}
-          </Flex>
-        ))}
+              {msg.user_id === 99 && (
+                <Box borderRadius={"50%"} borderWidth={2} p={1}>
+                  <Image
+                    src={groupImg}
+                    width="40px"
+                    height="40px"
+                    borderRadius={"40%"}
+                  />
+                </Box>
+              )}
+            </Flex>
+          ))}
       </Flex>
       <Spacer />
       <Box py={2} />
