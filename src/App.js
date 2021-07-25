@@ -1,8 +1,9 @@
 import React from "react";
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import { Flex } from "@chakra-ui/layout";
 
 import Login from "./containers/Login";
-import { Flex } from "@chakra-ui/layout";
+import Signup from "./containers/Signup";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Flex h="100vh" w="100vw">
         <Switch>
           <Route exact path ='/login' component={Login} />
+          <Route exact path ='/signup' component={Signup} />
         </Switch>
     </Flex>
       </Router>
