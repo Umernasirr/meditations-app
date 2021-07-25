@@ -25,7 +25,8 @@ function App() {
       if (user) {
         if (
           history.location.pathname === "/signup" ||
-          history.location.pathname === "/login"
+          history.location.pathname === "/login" ||
+          history.location.pathname === "/"
         ) {
           dispatch(setUser(user));
           // history.push("/rooms");

@@ -66,11 +66,11 @@ const Signup = () => {
     setErrors([]);
     if (isFormEmpty()) {
       error = { message: "Fill in all fields" };
-      setErrors(errorsArray.concat(error));
+      setErrors([error]);
       return false;
     } else if (!isPasswordValid()) {
       error = { message: "Password is not valid" };
-      setErrors(errorsArray.concat(error));
+      setErrors([error]);
       return false;
     } else {
       errorsArray = [];
@@ -236,7 +236,7 @@ const Signup = () => {
           </InputRightElement>
         </InputGroup>
 
-        {displayErrors()}
+        {errors.length > 0 && displayErrors()}
         <Box my={2} />
 
         <Button width="120px" colorScheme="facebook" onClick={handleSubmit}>
