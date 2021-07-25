@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import {
   Flex,
@@ -17,24 +18,58 @@ import {
   AiOutlineKey,
   AiOutlineMail,
 } from "react-icons/all";
+import firebase from "../firebase";
+
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [errors, setErrors] = useState([]);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const history = useHistory();
 
-  const handleForgetPassword = () => {};
+  const { email, password } = formData;
 
-  const handleCreateAccount = () => {};
+  const isFormValid = () => email && password;
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.name]: e.value });
+  };
 
-  const handleSubmit = () => {
-    console.log("Clicked");
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (isFormValid()) {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .then((signedInUser) => {
+          console.log("user logged in", signedInUser);
+          history.push("/rooms");
+        })
+        .catch((err) => {
+          console.log(err);
+          setErrors([err]);
+        });
+    } else {
+      setErrors([{ message: "Please fill the fields" }]);
+    }
+  };
+
+  const displayErrors = () => {
+    return (
+      errors &&
+      errors.map((error, i) => (
+        <Flex key={i.toString()} w="80%" align="left" p={1}>
+          <Text color="red.700">* {error.message}</Text>
+        </Flex>
+      ))
+    );
   };
 
   return (
     <Flex h="full" w="full" bg="gray.900" align="center" justify="center">
       <Flex
         w="30%"
-        h="50%"
         bg="white"
         align="center"
         justify="center"
@@ -50,12 +85,14 @@ const Login = () => {
             <AiOutlineMail onClick={() => setShowPassword(!showPassword)} />
           </InputLeftElement>
 
-          <Input borderColor="gray.300" placeholder="Enter your Email" />
+          <Input
+            value={email}
+            name="email"
+            onChange={(e) => onChange(e.target)}
+            borderColor="gray.300"
+            placeholder="Enter your Email"
+          />
         </InputGroup>
-
-        <Flex w="80%" align="left">
-          <Text color="red.700">{emailError}</Text>
-        </Flex>
 
         <Box my={2} />
         <InputGroup w="80%">
@@ -65,8 +102,11 @@ const Login = () => {
 
           <Input
             type={showPassword ? "text" : "password"}
+            name="password"
+            value={password}
             borderColor="gray.300"
             placeholder="Enter your Password"
+            onChange={(e) => onChange(e.target)}
           />
 
           <InputRightElement px={2}>
@@ -79,11 +119,7 @@ const Login = () => {
             )}
           </InputRightElement>
         </InputGroup>
-
-        <Flex w="80%" align="left">
-          <Text color="red.700">{passwordError}</Text>
-        </Flex>
-
+        {errors.length > 0 && displayErrors()}
         <Box my={3} />
 
         <Button width="120px" colorScheme="facebook" onClick={handleSubmit}>
@@ -92,23 +128,15 @@ const Login = () => {
 
         <Box my={3} />
 
-        <Flex w="full" justify="space-around">
+        <Flex w="full" justify="center">
+          <Text pr={1}>Don't have an account?</Text>
           <Button
             variant="link"
             _focus={{ outline: "none" }}
             color="facebook.300"
-            onClick={handleForgetPassword}
+            onClick={() => history.push("/signup")}
           >
-            Forget Password
-          </Button>
-
-          <Button
-            variant="link"
-            _focus={{ outline: "none" }}
-            color="facebook.300"
-            onClick={handleCreateAccount}
-          >
-            Create an Account
+            Signup
           </Button>
         </Flex>
       </Flex>
