@@ -25,9 +25,6 @@ import firebase from "../firebase";
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [nameError, setnameError] = useState("");
   const [errors, setErrors] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
@@ -35,9 +32,7 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
-  const [userRef, setUserRef] = useState(
-    firebase.firestore().collection("users")
-  );
+  const [userRef, _] = useState(firebase.firestore().collection("users"));
 
   const { name, email, password, confirmPassword } = formData;
   const history = useHistory();
@@ -69,21 +64,17 @@ const Signup = () => {
     let errorsArray = [];
     let error;
     setErrors([]);
-    console.log(errors, "error");
-    console.log(password, "pass");
     if (isFormEmpty()) {
       error = { message: "Fill in all fields" };
       setErrors(errorsArray.concat(error));
       return false;
     } else if (!isPasswordValid()) {
-      console.log("not");
       error = { message: "Password is not valid" };
       setErrors(errorsArray.concat(error));
       return false;
     } else {
       errorsArray = [];
       setErrors([]);
-      console.log("coming", errors);
       return true;
     }
   };
@@ -100,8 +91,9 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     if (isFormValid()) {
-      e.preventDefault();
       setErrors([]);
+      e.preventDefault();
+
       firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
@@ -119,28 +111,28 @@ const Signup = () => {
                   console.log("user created");
                 })
                 .catch((err) => {
-                  setErrors(errors.concat(err));
-                  console.log(err);
+                  setErrors([err]);
                 });
             })
             .catch((err) => {
-              console.log(err);
-              setErrors(errors.concat(err));
+              setErrors([err]);
             });
         })
         .catch((err) => {
-          setErrors(errors.concat(err));
-          console.log(err);
+          setErrors([err]);
         });
     }
   };
 
   const displayErrors = () => {
-    return errors.map((error, i) => (
-      <Flex w="80%" align="left" p={1}>
-        <Text color="red.700">* {error.message}</Text>
-      </Flex>
-    ));
+    return (
+      errors &&
+      errors.map((error, i) => (
+        <Flex key={i.toString()} w="80%" align="left" p={1}>
+          <Text color="red.700">* {error.message}</Text>
+        </Flex>
+      ))
+    );
   };
 
   return (
@@ -241,10 +233,6 @@ const Signup = () => {
             )}
           </InputRightElement>
         </InputGroup>
-
-        <Flex w="80%" align="left">
-          <Text color="red.700">{passwordError}</Text>
-        </Flex>
 
         {displayErrors()}
         <Box my={2} />
