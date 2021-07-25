@@ -29,14 +29,14 @@ function App() {
           history.location.pathname === "/"
         ) {
           dispatch(setUser(user));
-          // history.push("/rooms");
+          history.push("/rooms");
         } else {
           dispatch(setUser(user));
           history.push(history.location.pathname);
         }
       } else {
         dispatch(clearUser());
-        history.push("/login");
+        history.push("/");
       }
     });
   }, []);
