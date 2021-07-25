@@ -1,10 +1,8 @@
 import React from "react";
 
 import { Flex, Box, Text, Grid, Button, Image } from "@chakra-ui/react";
-
 import Header from "../components/Header";
-
-const meditationCoverImg = process.env.PUBLIC_URL + "/meditation_cover.jpg";
+const meditationCoverImg = process.env.PUBLIC_URL + "/meditation_cover.png";
 
 const Dashboard = () => {
   return (
@@ -48,9 +46,8 @@ const Dashboard = () => {
           </Flex>
         </Flex>
 
-        <Flex width="90%">
+        <Flex>
           <Image
-            boxShadow="md"
             src={meditationCoverImg}
             objectFit="contain"
             borderRadius={32}
