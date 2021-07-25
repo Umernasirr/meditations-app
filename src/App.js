@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Flex } from "@chakra-ui/layout";
+import firebase from "firebase";
 
 import Login from "./containers/Login";
 import Signup from "./containers/Signup";
