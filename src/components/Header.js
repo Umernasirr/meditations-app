@@ -1,8 +1,27 @@
 import { Flex, Text, Box, Button, Image } from "@chakra-ui/react";
-import React from "react";
+import React, { Fragment } from "react";
+import { useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import firebase from "../firebase.js";
+import { clearUser } from "../redux/user.js";
 const logoImg = process.env.PUBLIC_URL + "/logo.png";
 
 const Header = () => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.user);
+  const logoutHandler = () => {
+    firebase
+      .auth()
+      .signOut()
+      .then(function() {
+        dispatch(clearUser);
+      })
+      .catch(function(error) {
+        console.log(error);
+        // An error happened.
+      });
+  };
   return (
     <Flex
       w="full"
@@ -24,22 +43,33 @@ const Header = () => {
         <Button variant="link" _focus={{ outline: "none" }} color="white">
           Join A Room
         </Button>
-        <Box mx={4} />
-
-        <Button variant="link" _focus={{ outline: "none" }} color="white">
-          Login
-        </Button>
+        {!currentUser && (
+          <Fragment>
+            <Box mx={4} />
+            <Button
+              onClick={() => history.push("/login")}
+              variant="link"
+              _focus={{ outline: "none" }}
+              color="white"
+            >
+              Login
+            </Button>
+          </Fragment>
+        )}
         <Box mx={4} />
 
         <Button
           width="100px"
           variant="solid"
           borderRadius={32}
+          onClick={() =>
+            currentUser ? logoutHandler() : history.push("/signup")
+          }
           bg="white"
           _focus={{ outline: "none" }}
           color="facebook.500"
         >
-          Register
+          {currentUser ? "Logout" : "Register"}
         </Button>
       </Flex>
     </Flex>

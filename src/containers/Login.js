@@ -43,7 +43,6 @@ const Login = () => {
         .auth()
         .signInWithEmailAndPassword(email, password)
         .then((signedInUser) => {
-          console.log("user logged in", signedInUser);
           history.push("/rooms");
         })
         .catch((err) => {
