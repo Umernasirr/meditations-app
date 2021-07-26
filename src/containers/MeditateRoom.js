@@ -38,14 +38,24 @@ const MeditationRooms = () => {
 
   const roomsRef = firebase.firestore().collection("rooms");
   const handleRoomCreate = () => {
+    let doc = roomsRef.doc();
+
     setShowModal(false);
-    roomsRef
-      .doc()
+    doc
       .set({
         title: roomName,
-        members: [currentUser],
       })
-      .then((res) => console.log("Room Created"));
+
+      .then((roomre) => {
+        console.log(doc);
+        roomsRef
+          .doc(doc.id)
+          .collection("members")
+          .add({
+            createdAt: new Date().getTime(),
+            user: currentUser,
+          });
+      });
 
     setRoomName("");
   };
@@ -58,6 +68,9 @@ const MeditationRooms = () => {
     return roomsRef.onSnapshot((snapshot) => {
       const roomsData = [];
       snapshot.forEach((doc) => {
+        console.log(doc.data().members, "doc in snapshot");
+        // doc.data().
+        // if(doc)
         roomsData.push({ ...doc.data(), id: doc.id });
       });
 
