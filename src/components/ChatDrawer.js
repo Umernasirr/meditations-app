@@ -1,20 +1,15 @@
 import {
-  Input,
-  Button,
   Drawer,
   DrawerBody,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-  Box,
   Text,
 } from "@chakra-ui/react";
 
 import React from "react";
 import MeditationChat from "./MeditationChat";
-const groupImg = process.env.PUBLIC_URL + "/group_icon.png";
 
 const ChatDrawer = ({
   isDrawerOpen,

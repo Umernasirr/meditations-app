@@ -84,17 +84,17 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
     <Flex direction="column" h="full">
       <Box my={4} />
 
-      <Flex px={12} direction="column">
+      <Flex px={0} direction="column">
         {messages.length > 0 &&
           messages.map((msg, index) => (
             <Flex
               justify={
-                msg.user_id === currentUser?.uid ? "flex-end" : "flex-start"
+                msg.user.id === currentUser?.uid ? "flex-end" : "flex-start"
               }
               my={2}
             >
-              {msg.user_id !== currentUser?.uid && (
-                <Box>
+              {msg.user.id !== currentUser?.uid && (
+                <Flex direction="column" align="center" justify="center">
                   <Box borderRadius={"50%"} borderWidth={2} p={1}>
                     <Image
                       src={groupImg}
@@ -104,7 +104,7 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
                     />
                   </Box>
                   <Text>{msg.user.displayName}</Text>
-                </Box>
+                </Flex>
               )}
               <Box mx={1} />
               <Text
@@ -112,7 +112,7 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
                 px={4}
                 borderRadius={24}
                 bg={
-                  msg.user_id === currentUser?.uid ? "gray.200" : "linkedin.100"
+                  msg.user.id === currentUser?.uid ? "gray.200" : "linkedin.100"
                 }
                 color="blackAlpha.800"
               >
@@ -120,7 +120,7 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
               </Text>
               <Box mx={1} />
 
-              {msg.user_id === currentUser?.uid && (
+              {msg.user.id === currentUser?.uid && (
                 <Box>
                   <Box borderRadius={"50%"} borderWidth={2} p={1}>
                     <Image
