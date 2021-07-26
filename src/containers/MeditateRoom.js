@@ -25,6 +25,7 @@ import firebase from "../firebase";
 import { useSelector } from "react-redux";
 import MyDrawer from "../components/MyDrawer";
 import ChatDrawer from "../components/ChatDrawer";
+import { RiEyeOffFill } from "react-icons/ri";
 
 const MeditationRooms = () => {
   const [showModal, setShowModal] = useState(false);
@@ -48,7 +49,6 @@ const MeditationRooms = () => {
       })
 
       .then((roomre) => {
-        console.log(doc);
         roomsRef
           .doc(doc.id)
           .collection("members")
@@ -66,18 +66,32 @@ const MeditationRooms = () => {
   };
 
   useEffect(() => {
-    return roomsRef.onSnapshot((snapshot) => {
-      const roomsData = [];
-      snapshot.forEach((doc) => {
-        console.log(...doc.data(), "doc in snapshot");
-        // doc.data().
-        // if(doc)
-        roomsData.push({ ...doc.data(), id: doc.id });
+    if (currentUser) {
+      return roomsRef.onSnapshot((snapshot) => {
+        const roomsData = [];
+        snapshot.forEach((doc) => {
+          let isMember = false;
+          const members = roomsRef
+            .doc(doc.id)
+            .collection("members")
+            .get()
+            .then((ref) => {
+              ref.forEach((reff) => {
+                if (reff.data().user.uid === currentUser.uid) {
+                  isMember = true;
+                }
+              });
+            })
+            .then(() => {
+              if (isMember) {
+                roomsData.push({ ...doc.data(), id: doc.id });
+                setRooms(roomsData);
+              }
+            });
+        });
       });
-
-      setRooms(roomsData);
-    });
-  }, []);
+    }
+  }, [currentUser]);
 
   return (
     <Flex h="100vh" w="100vw" bg="gray.100" direction="column">
