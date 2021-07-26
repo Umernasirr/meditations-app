@@ -25,7 +25,7 @@ function App() {
           history.location.pathname === "/"
         ) {
           dispatch(setUser(user));
-          history.push("/rooms");
+          history.push("/meditate");
         } else {
           dispatch(setUser(user));
           history.push(history.location.pathname);
@@ -42,7 +42,7 @@ function App() {
         <Route exact path="/" component={Dashboard} />
         <Route exact path="/login" component={Login} />
         <Route exact path="/signup" component={Signup} />
-        <Route exact path="/rooms" component={Rooms} />
+        <Route exact path="/rooms" component={MeditateRoom} />
         <Route exact path="/meditate" component={MeditateRoom} />
 
         <Footer />

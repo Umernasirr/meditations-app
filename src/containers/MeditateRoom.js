@@ -30,8 +30,8 @@ const MeditationRooms = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(undefined);
   const [roomName, setRoomName] = useState("");
-  const [isDrawerOpen, setDrawerOpen] = useState(true);
-  const [isChatDrawerOpen, setChatDrawerOpen] = useState(true);
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isChatDrawerOpen, setChatDrawerOpen] = useState(false);
 
   const [rooms, setRooms] = useState(undefined);
   const { currentUser } = useSelector((state) => state.user);
@@ -69,7 +69,7 @@ const MeditationRooms = () => {
     return roomsRef.onSnapshot((snapshot) => {
       const roomsData = [];
       snapshot.forEach((doc) => {
-        console.log(doc.data().members, "doc in snapshot");
+        console.log(...doc.data(), "doc in snapshot");
         // doc.data().
         // if(doc)
         roomsData.push({ ...doc.data(), id: doc.id });
@@ -77,7 +77,7 @@ const MeditationRooms = () => {
 
       setRooms(roomsData);
     });
-  }, [roomsRef]);
+  }, []);
 
   return (
     <Flex h="100vh" w="100vw" bg="gray.100" direction="column">
