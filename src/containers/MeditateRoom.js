@@ -5,8 +5,6 @@ import {
   Box,
   Text,
   Button,
-  Grid,
-  GridItem,
   Modal,
   ModalContent,
   ModalHeader,
@@ -16,21 +14,24 @@ import {
   InputGroup,
   Input,
   InputLeftElement,
+  Spacer,
+  IconButton,
 } from "@chakra-ui/react";
 
 import Header from "../components/Header";
-import ChatList from "../components/ChatList";
-import ChatContainer from "../components/ChatContainer";
+
 import { AiOutlineMessage } from "react-icons/ai";
 import firebase from "../firebase";
 import { useSelector } from "react-redux";
 import MyDrawer from "../components/MyDrawer";
+import ChatDrawer from "../components/ChatDrawer";
 
 const MeditationRooms = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(undefined);
   const [roomName, setRoomName] = useState("");
   const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [isChatDrawerOpen, setChatDrawerOpen] = useState(true);
 
   const [rooms, setRooms] = useState(undefined);
   const { currentUser } = useSelector((state) => state.user);
@@ -61,10 +62,9 @@ const MeditationRooms = () => {
         roomsData.push({ ...doc.data(), id: doc.id });
       });
 
-      console.log(roomsData);
       setRooms(roomsData);
     });
-  }, []);
+  }, [roomsRef]);
 
   return (
     <Flex h="100vh" w="100vw" bg="gray.100" direction="column">
@@ -77,6 +77,13 @@ const MeditationRooms = () => {
       <Header
         setShowJoinModal={setShowJoinModal}
         setDrawerOpen={setDrawerOpen}
+      />
+
+      <ChatDrawer
+        isDrawerOpen={isChatDrawerOpen}
+        setDrawerOpen={setChatDrawerOpen}
+        selectedRoom={selectedRoom}
+        setSelectedRoom={setSelectedRoom}
       />
 
       {/* Drawer */}
@@ -130,7 +137,7 @@ const MeditationRooms = () => {
               <Input
                 value={roomName}
                 onChange={(e) => setRoomName(e.target.value)}
-                placeholder="Enter Room Name"
+                placeholder="Enter Room Name..."
               />
             </InputGroup>
           </ModalBody>
@@ -166,6 +173,20 @@ const MeditationRooms = () => {
           </Button>
         </Flex>
 
+        <Box mt={4} />
+
+        <Spacer />
+        <Flex height="40px" w="full" justify="flex-end" align="center">
+          <Box>
+            <IconButton
+              colorScheme="facebook"
+              onClick={() => setChatDrawerOpen(true)}
+              _focus={{ outline: "none" }}
+              size="lg"
+              icon={<AiOutlineMessage size="24" />}
+            />
+          </Box>
+        </Flex>
         <Box mt={4} />
       </Flex>
     </Flex>

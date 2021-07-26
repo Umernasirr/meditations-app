@@ -25,7 +25,7 @@ import { useSelector } from "react-redux";
 
 const groupImg = process.env.PUBLIC_URL + "/group_icon.png";
 
-const MeditationChat = ({ selectedChat, setSelectedChat }) => {
+const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
   const [messages, setMessages] = useState([]);
   const [messageTxt, setMessageTxt] = useState("");
   const { currentUser } = useSelector((state) => state.user);
@@ -35,23 +35,15 @@ const MeditationChat = ({ selectedChat, setSelectedChat }) => {
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleStartMeditation = () => {
-    // scrollToBottom();
-  };
-
-  const handleCloseChat = () => {
-    setSelectedChat(undefined);
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   };
 
   const handleSubmitMessage = () => {
     if (messageTxt !== "") {
-      roomsRef.doc(selectedChat.id).collection("messages").add({
+      roomsRef.doc(selectedRoom.id).collection("messages").add({
         messageTxt,
         createdAt: new Date().getTime(),
-        user_id: currentUser.uid,
+        user: currentUser,
         //  user: {
         //    _id: currentUser.uid,
         //    email: currentUser.email,
@@ -65,7 +57,7 @@ const MeditationChat = ({ selectedChat, setSelectedChat }) => {
   useEffect(() => {
     setMessages([]);
     const messagesListener = roomsRef
-      .doc(selectedChat.id)
+      .doc(selectedRoom.id)
       .collection("messages")
       .orderBy("createdAt", "asc")
       .onSnapshot((querySnapshot) => {
@@ -86,93 +78,13 @@ const MeditationChat = ({ selectedChat, setSelectedChat }) => {
       });
 
     return () => messagesListener();
-  }, [selectedChat]);
+  }, []);
 
   return (
-    <Flex direction="column" bg="white" w="full" h="full">
-      {/* Top Row */}
-      <Flex
-        justify="space-between"
-        align="center"
-        px={12}
-        py={2}
-        boxShadow="base"
-      >
-        <Flex align="center">
-          <Box borderRadius={"50%"} borderWidth={2} p={1}>
-            <Image
-              src={groupImg}
-              width="40px"
-              height="40px"
-              borderRadius={"40%"}
-            />
-          </Box>
-
-          <Box mx={2} />
-          <Text fontWeight="bold" color="blackAlpha.700">
-            {selectedChat.title}
-          </Text>
-
-          <Text fontWeight="bold" color="blackAlpha.700">
-            {" - " + selectedChat.id}
-          </Text>
-        </Flex>
-
-        <Flex>
-          <Tooltip label="Start the Meditation" aria-label="A tooltip">
-            <IconButton
-              onClick={handleStartMeditation}
-              variant="ghost"
-              _focus={{ outline: "none" }}
-              fontSize={24}
-              icon={<AiOutlineArrowRight />}
-            />
-          </Tooltip>
-
-          <Box mx={2} />
-          <Tooltip label="View Members" aria-label="A tooltip">
-            <IconButton
-              onClick={handleStartMeditation}
-              variant="ghost"
-              _focus={{ outline: "none" }}
-              fontSize={24}
-              icon={<BiGroup />}
-            />
-          </Tooltip>
-
-          <Box mx={2} />
-          <Tooltip label="Exit Group" aria-label="A tooltip">
-            <IconButton
-              onClick={handleCloseChat}
-              variant="ghost"
-              _focus={{ outline: "none" }}
-              fontSize={24}
-              icon={<AiOutlineCloseCircle />}
-            />
-          </Tooltip>
-        </Flex>
-      </Flex>
-
+    <Flex direction="column" h="full">
       <Box my={4} />
 
-      <Flex
-        px={12}
-        direction="column"
-        overflowY="scroll"
-        maxHeight="400px"
-        css={{
-          "&::-webkit-scrollbar": {
-            width: "4px",
-          },
-          "&::-webkit-scrollbar-track": {
-            width: "6px",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#898F9C",
-            borderRadius: "16px",
-          },
-        }}
-      >
+      <Flex px={12} direction="column">
         {messages.length > 0 &&
           messages.map((msg, index) => (
             <Flex
@@ -182,13 +94,16 @@ const MeditationChat = ({ selectedChat, setSelectedChat }) => {
               my={2}
             >
               {msg.user_id !== currentUser?.uid && (
-                <Box borderRadius={"50%"} borderWidth={2} p={1}>
-                  <Image
-                    src={groupImg}
-                    width="40px"
-                    height="40px"
-                    borderRadius={"40%"}
-                  />
+                <Box>
+                  <Box borderRadius={"50%"} borderWidth={2} p={1}>
+                    <Image
+                      src={groupImg}
+                      width="40px"
+                      height="40px"
+                      borderRadius={"40%"}
+                    />
+                  </Box>
+                  <Text>{msg.user.displayName}</Text>
                 </Box>
               )}
               <Box mx={1} />
@@ -206,13 +121,17 @@ const MeditationChat = ({ selectedChat, setSelectedChat }) => {
               <Box mx={1} />
 
               {msg.user_id === currentUser?.uid && (
-                <Box borderRadius={"50%"} borderWidth={2} p={1}>
-                  <Image
-                    src={groupImg}
-                    width="40px"
-                    height="40px"
-                    borderRadius={"40%"}
-                  />
+                <Box>
+                  <Box borderRadius={"50%"} borderWidth={2} p={1}>
+                    <Image
+                      src={groupImg}
+                      width="40px"
+                      height="40px"
+                      borderRadius={"40%"}
+                    />
+                  </Box>
+
+                  <Text>{msg.user.displayName}</Text>
                 </Box>
               )}
 

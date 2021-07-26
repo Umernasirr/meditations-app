@@ -4,7 +4,6 @@ import {
   Text,
   Image,
   Box,
-  Icon,
   Input,
   InputGroup,
   InputLeftElement,

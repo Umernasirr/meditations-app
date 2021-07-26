@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Input,
   Button,
@@ -14,10 +15,11 @@ import {
   Image,
 } from "@chakra-ui/react";
 
-import React from "react";
 const groupImg = process.env.PUBLIC_URL + "/group_icon.png";
 
 const MyDrawer = ({ isDrawerOpen, setDrawerOpen, rooms, setSelectedRoom }) => {
+  const [filteredRooms, setFilteredRooms] = useState(rooms ? rooms : []);
+
   return (
     <Drawer
       isOpen={isDrawerOpen}
