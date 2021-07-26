@@ -25,7 +25,7 @@ function App() {
           history.location.pathname === "/"
         ) {
           dispatch(setUser(user));
-          history.push("/rooms");
+          history.push("/meditate");
         } else {
           dispatch(setUser(user));
           history.push(history.location.pathname);

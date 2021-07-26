@@ -66,7 +66,7 @@ const MeditationRooms = () => {
     return roomsRef.onSnapshot((snapshot) => {
       const roomsData = [];
       snapshot.forEach((doc) => {
-        console.log(doc.data().members, "doc in snapshot");
+        console.log(...doc.data(), "doc in snapshot");
         // doc.data().
         // if(doc)
         roomsData.push({ ...doc.data(), id: doc.id });
