@@ -84,12 +84,12 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
     <Flex direction="column" h="full">
       <Box my={4} />
 
-      <Flex px={12} direction="column">
+      <Flex px={0} direction="column">
         {messages.length > 0 &&
           messages.map((msg, index) => (
             <Flex
               justify={
-                msg.user_id === currentUser?.uid ? "flex-end" : "flex-start"
+                msg.user.id === currentUser?.uid ? "flex-end" : "flex-start"
               }
               my={2}
             >

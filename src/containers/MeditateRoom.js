@@ -30,8 +30,8 @@ const MeditationRooms = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(undefined);
   const [roomName, setRoomName] = useState("");
-  const [isDrawerOpen, setDrawerOpen] = useState(true);
-  const [isChatDrawerOpen, setChatDrawerOpen] = useState(true);
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isChatDrawerOpen, setChatDrawerOpen] = useState(false);
 
   const [rooms, setRooms] = useState(undefined);
   const { currentUser } = useSelector((state) => state.user);
@@ -49,13 +49,10 @@ const MeditationRooms = () => {
 
       .then((roomre) => {
         console.log(doc);
-        roomsRef
-          .doc(doc.id)
-          .collection("members")
-          .add({
-            createdAt: new Date().getTime(),
-            user: currentUser,
-          });
+        roomsRef.doc(doc.id).collection("members").add({
+          createdAt: new Date().getTime(),
+          user: currentUser,
+        });
       });
 
     setRoomName("");
@@ -77,7 +74,7 @@ const MeditationRooms = () => {
 
       setRooms(roomsData);
     });
-  }, [roomsRef]);
+  }, []);
 
   return (
     <Flex h="100vh" w="100vw" bg="gray.100" direction="column">
@@ -189,17 +186,19 @@ const MeditationRooms = () => {
         <Box mt={4} />
 
         <Spacer />
-        <Flex height="40px" w="full" justify="flex-end" align="center">
-          <Box>
-            <IconButton
-              colorScheme="facebook"
-              onClick={() => setChatDrawerOpen(true)}
-              _focus={{ outline: "none" }}
-              size="lg"
-              icon={<AiOutlineMessage size="24" />}
-            />
-          </Box>
-        </Flex>
+        {selectedRoom && (
+          <Flex height="40px" w="full" justify="flex-end" align="center">
+            <Box>
+              <IconButton
+                colorScheme="facebook"
+                onClick={() => setChatDrawerOpen(true)}
+                _focus={{ outline: "none" }}
+                size="lg"
+                icon={<AiOutlineMessage size="24" />}
+              />
+            </Box>
+          </Flex>
+        )}
         <Box mt={4} />
       </Flex>
     </Flex>
