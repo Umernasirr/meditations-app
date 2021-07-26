@@ -78,9 +78,6 @@ const Signup = () => {
       return true;
     }
   };
-  const handleForgetPassword = () => {};
-
-  const handleCreateAccount = () => {};
 
   const saveUser = (createdUser) => {
     return userRef.doc(createdUser.user.uid).set({

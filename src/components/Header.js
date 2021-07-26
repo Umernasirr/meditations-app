@@ -1,12 +1,13 @@
-import { Flex, Text, Box, Button, Image } from "@chakra-ui/react";
+import { Flex, Text, Box, Button, Image, IconButton } from "@chakra-ui/react";
 import React, { Fragment } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import firebase from "../firebase.js";
 import { clearUser } from "../redux/user.js";
+import { AiOutlineMenu } from "react-icons/ai";
 const logoImg = process.env.PUBLIC_URL + "/logo.png";
 
-const Header = ({ setShowJoinModal }) => {
+const Header = ({ setShowJoinModal, setDrawerOpen }) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
@@ -40,7 +41,14 @@ const Header = ({ setShowJoinModal }) => {
       color="white"
     >
       <Flex align="center" px={12}>
-        <Image src={logoImg} width="40px" height="50px" />
+        <IconButton
+          variant="ghost"
+          colorScheme="white"
+          fontSize={22}
+          onClick={() => setDrawerOpen(true)}
+          _focus={{ outline: "none" }}
+          icon={<AiOutlineMenu />}
+        />
         <Box mx={2} />
         <Text fontSize="md" fontWeight="medium" letterSpacing="1.2">
           <Link href="/">Meditation App</Link>
