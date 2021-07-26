@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import {
   Flex,
   Box,
-  Text,
   Button,
   Modal,
   ModalContent,
@@ -17,19 +16,20 @@ import {
   Spacer,
   IconButton,
 } from "@chakra-ui/react";
-
 import Header from "../components/Header";
-
 import { AiOutlineMessage } from "react-icons/ai";
 import firebase from "../firebase";
 import { useSelector } from "react-redux";
 import MyDrawer from "../components/MyDrawer";
 import ChatDrawer from "../components/ChatDrawer";
+import CountdownTimer from "../components/CountdownTimer";
+
+const backgroundImg = process.env.PUBLIC_URL + "/bg_img.jpg";
 
 const MeditationRooms = () => {
-  const [showModal, setShowModal] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(undefined);
   const [roomName, setRoomName] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isChatDrawerOpen, setChatDrawerOpen] = useState(false);
 
@@ -77,7 +77,14 @@ const MeditationRooms = () => {
   }, []);
 
   return (
-    <Flex h="100vh" w="100vw" bg="gray.100" direction="column">
+    <Flex
+      h="100vh"
+      w="100vw"
+      bg="gray.100"
+      direction="column"
+      bgImage={backgroundImg}
+      bgSize="cover"
+    >
       <MyDrawer
         isDrawerOpen={isDrawerOpen}
         setDrawerOpen={setDrawerOpen}
@@ -87,6 +94,7 @@ const MeditationRooms = () => {
       <Header
         setShowJoinModal={setShowJoinModal}
         setDrawerOpen={setDrawerOpen}
+        setShowModal={setShowModal}
       />
 
       <ChatDrawer
@@ -166,24 +174,10 @@ const MeditationRooms = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <Box mt={8} />
       <Flex mx={24} direction="column" h="full">
-        <Flex align="center" justify="space-between">
-          <Text fontSize="2xl" fontWeight="medium">
-            Chats
-          </Text>
-
-          <Button
-            colorScheme="facebook"
-            variant="outline"
-            _focus={{ outline: "none" }}
-            onClick={() => setShowModal(true)}
-          >
-            Create A New Room
-          </Button>
+        <Flex h="full" w="full" align="center" justify="center">
+          <CountdownTimer />
         </Flex>
-
-        <Box mt={4} />
 
         <Spacer />
         {selectedRoom && (

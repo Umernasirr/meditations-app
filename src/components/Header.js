@@ -7,7 +7,7 @@ import { clearUser } from "../redux/user.js";
 import { AiOutlineMenu } from "react-icons/ai";
 const logoImg = process.env.PUBLIC_URL + "/logo.png";
 
-const Header = ({ setShowJoinModal, setDrawerOpen }) => {
+const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal }) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
@@ -35,10 +35,11 @@ const Header = ({ setShowJoinModal, setDrawerOpen }) => {
     <Flex
       w="full"
       height="60px"
-      bg="facebook.500"
+      bg="transparent"
       align="center"
       justify="space-between"
       color="white"
+      py={10}
     >
       <Flex align="center" px={12}>
         <IconButton
@@ -64,19 +65,21 @@ const Header = ({ setShowJoinModal, setDrawerOpen }) => {
         >
           Join A Room
         </Button>
-        {!currentUser && (
-          <Fragment>
-            <Box mx={4} />
-            <Button
-              onClick={() => history.push("/login")}
-              variant="link"
-              _focus={{ outline: "none" }}
-              color="white"
-            >
-              Login
-            </Button>
-          </Fragment>
-        )}
+
+        <Fragment>
+          <Box mx={4} />
+          <Button
+            onClick={() =>
+              !currentUser ? history.push("/login") : setShowModal(true)
+            }
+            variant="link"
+            _focus={{ outline: "none" }}
+            color="white"
+          >
+            {!currentUser ? "Login" : "Create New Room"}
+          </Button>
+        </Fragment>
+
         <Box mx={4} />
 
         <Button
