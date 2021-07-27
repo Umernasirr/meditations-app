@@ -8,7 +8,6 @@ import Login from "./containers/Login";
 import Signup from "./containers/Signup";
 import Dashboard from "./containers/Dashboard";
 import Footer from "./components/Footer";
-import Rooms from "./containers/Rooms";
 import { setUser, clearUser } from "./redux/user";
 import MeditateRoom from "./containers/MeditateRoom";
 
@@ -22,6 +21,7 @@ function App() {
         if (
           history.location.pathname === "/signup" ||
           history.location.pathname === "/login" ||
+          history.location.pathname === "/meditate" ||
           history.location.pathname === "/"
         ) {
           dispatch(setUser(user));

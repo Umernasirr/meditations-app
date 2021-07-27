@@ -1,21 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import {
-  Flex,
-  Box,
-  Button,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  InputGroup,
-  Input,
-  InputLeftElement,
-  Spacer,
-  IconButton,
-} from "@chakra-ui/react";
+import { Flex, Box, Spacer, IconButton } from "@chakra-ui/react";
 import Header from "../components/Header";
 import { AiOutlineMessage } from "react-icons/ai";
 import firebase from "../firebase";
@@ -23,6 +8,8 @@ import { useSelector } from "react-redux";
 import MyDrawer from "../components/MyDrawer";
 import ChatDrawer from "../components/ChatDrawer";
 import CountdownTimer from "../components/CountdownTimer";
+import CreateNewRoomModal from "../components/CreateNewRoomModal";
+import JoinRoomModal from "../components/JoinRoomModal";
 
 const backgroundImg = process.env.PUBLIC_URL + "/bg_img.jpg";
 
@@ -32,7 +19,7 @@ const MeditationRooms = () => {
   const [showModal, setShowModal] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isChatDrawerOpen, setChatDrawerOpen] = useState(false);
-
+  const [isPlaying, setIsPlaying] = useState(false);
   const [rooms, setRooms] = useState(undefined);
   const { currentUser } = useSelector((state) => state.user);
   const [showJoinModal, setShowJoinModal] = useState(false);
@@ -65,12 +52,12 @@ const MeditationRooms = () => {
   useEffect(() => {
     return roomsRef.onSnapshot((snapshot) => {
       const roomsData = [];
-      snapshot.forEach((doc) => {
-        console.log(...doc.data(), "doc in snapshot");
-        // doc.data().
-        // if(doc)
-        roomsData.push({ ...doc.data(), id: doc.id });
-      });
+      snapshot &&
+        snapshot.forEach((doc) => {
+          // doc.data().
+          // if(doc)
+          roomsData.push({ ...doc.data(), id: doc.id });
+        });
 
       setRooms(roomsData);
     });
@@ -90,6 +77,7 @@ const MeditationRooms = () => {
         setDrawerOpen={setDrawerOpen}
         rooms={rooms}
         setSelectedRoom={setSelectedRoom}
+        setChatDrawerOpen={setChatDrawerOpen}
       />
       <Header
         setShowJoinModal={setShowJoinModal}
@@ -104,87 +92,35 @@ const MeditationRooms = () => {
         setSelectedRoom={setSelectedRoom}
       />
 
-      {/* Drawer */}
-
       {/* Join Room Model */}
-      <Modal
-        size="xl"
-        isOpen={showJoinModal}
-        onClose={() => setShowJoinModal(false)}
-      >
-        <ModalContent>
-          <ModalHeader>Join an Existing Room</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <InputGroup>
-              <InputLeftElement>
-                <AiOutlineMessage />
-              </InputLeftElement>
-              <Input
-                value={roomName}
-                onChange={(e) => setRoomName(e.target.value)}
-                placeholder="Enter Room Name"
-              />
-            </InputGroup>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              colorScheme="red"
-              mr={3}
-              onClick={() => setShowJoinModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button colorScheme="facebook" onClick={() => handleJoinRoom()}>
-              Join Room
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <JoinRoomModal
+        showJoinModal={showJoinModal}
+        setShowJoinModal={setShowJoinModal}
+        roomName={roomName}
+        setRoomName={setRoomName}
+        handleJoinRoom={handleJoinRoom}
+      />
       {/* Create New Room Modal */}
-      <Modal size="xl" isOpen={showModal} onClose={() => setShowModal(false)}>
-        <ModalContent>
-          <ModalHeader>New Room</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <InputGroup>
-              <InputLeftElement>
-                <AiOutlineMessage />
-              </InputLeftElement>
-              <Input
-                value={roomName}
-                onChange={(e) => setRoomName(e.target.value)}
-                placeholder="Enter Room Name..."
-              />
-            </InputGroup>
-          </ModalBody>
-
-          <ModalFooter>
-            <Button
-              colorScheme="red"
-              mr={3}
-              onClick={() => setShowModal(false)}
-            >
-              Cancel
-            </Button>
-            <Button colorScheme="facebook" onClick={() => handleRoomCreate()}>
-              Create New Room
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <CreateNewRoomModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        roomName={roomName}
+        setRoomName={setRoomName}
+        handleRoomCreate={handleRoomCreate}
+      />
       <Flex mx={24} direction="column" h="full">
         <Flex h="full" w="full" align="center" justify="center">
-          <CountdownTimer />
+          <CountdownTimer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
         </Flex>
 
         <Spacer />
         {selectedRoom && (
-          <Flex height="40px" w="full" justify="flex-end" align="center">
+          <Flex height="40px" w="90vw" justify="flex-end" align="center">
             <Box>
               <IconButton
-                colorScheme="facebook"
+                bg="brand.600"
+                color="white"
+                _hover={{ bg: "brand.800" }}
                 onClick={() => setChatDrawerOpen(true)}
                 _focus={{ outline: "none" }}
                 size="lg"
@@ -193,7 +129,7 @@ const MeditationRooms = () => {
             </Box>
           </Flex>
         )}
-        <Box mt={4} />
+        <Box mt={8} />
       </Flex>
     </Flex>
   );

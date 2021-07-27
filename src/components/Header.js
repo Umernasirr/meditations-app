@@ -7,7 +7,7 @@ import { clearUser } from "../redux/user.js";
 import { AiOutlineMenu } from "react-icons/ai";
 const logoImg = process.env.PUBLIC_URL + "/logo.png";
 
-const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal }) => {
+const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal, hasBg }) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
@@ -35,24 +35,32 @@ const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal }) => {
     <Flex
       w="full"
       height="60px"
-      bg="transparent"
+      bg={hasBg ? "brand.800" : "transparent"}
       align="center"
       justify="space-between"
       color="white"
-      py={10}
+      py={8}
     >
       <Flex align="center" px={12}>
-        <IconButton
-          variant="ghost"
-          colorScheme="white"
-          fontSize={22}
-          onClick={() => setDrawerOpen(true)}
-          _focus={{ outline: "none" }}
-          icon={<AiOutlineMenu />}
-        />
+        {!hasBg && (
+          <IconButton
+            variant="ghost"
+            color="brand.100"
+            _hover={{ backgroundColor: "transparent", color: "brand.200 " }}
+            fontSize={22}
+            onClick={() => setDrawerOpen(true)}
+            _focus={{ outline: "none" }}
+            icon={<AiOutlineMenu />}
+          />
+        )}
         <Box mx={2} />
-        <Text fontSize="md" fontWeight="medium" letterSpacing="1.2">
-          <Link href="/">Meditation App</Link>
+        <Text
+          fontSize="md"
+          fontWeight="medium"
+          color="gray.100"
+          letterSpacing="1.2"
+        >
+          Meditate App
         </Text>
       </Flex>
 
@@ -60,7 +68,7 @@ const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal }) => {
         <Button
           variant="link"
           _focus={{ outline: "none" }}
-          color="white"
+          color="gray.100"
           onClick={() => handleJoinRoom()}
         >
           Join A Room
@@ -74,7 +82,7 @@ const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal }) => {
             }
             variant="link"
             _focus={{ outline: "none" }}
-            color="white"
+            color="gray.100"
           >
             {!currentUser ? "Login" : "Create New Room"}
           </Button>
@@ -89,9 +97,9 @@ const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal }) => {
           onClick={() =>
             currentUser ? logoutHandler() : history.push("/signup")
           }
-          bg="white"
+          bg="gray.100"
           _focus={{ outline: "none" }}
-          color="facebook.500"
+          color="blackAlpha.800"
         >
           {currentUser ? "Logout" : "Register"}
         </Button>

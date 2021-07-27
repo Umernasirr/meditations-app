@@ -27,11 +27,12 @@ const ChatDrawer = ({
       {/* <DrawerOverlay /> */}
       {selectedRoom ? (
         <DrawerContent>
-          <DrawerCloseButton />
+          <DrawerCloseButton size="lg" color="white" />
 
           <DrawerHeader
-            bg="gray.100"
+            bg="brand.600"
             borderColor="gray.300"
+            color="white"
             borderBottomWidth={2}
           >
             <Text fontSize="md">
@@ -49,7 +50,7 @@ const ChatDrawer = ({
                 width: "6px",
               },
               "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#4267B2",
+                backgroundColor: "#6269A0",
                 borderRadius: "16px",
               },
             }}

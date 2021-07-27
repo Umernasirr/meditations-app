@@ -88,18 +88,19 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
         {messages.length > 0 &&
           messages.map((msg, index) => (
             <Flex
+              key={index.toString()}
               justify={
-                msg.user.id === currentUser?.uid ? "flex-end" : "flex-start"
+                msg.user.uid === currentUser?.uid ? "flex-end" : "flex-start"
               }
               my={2}
             >
-              {msg.user.id !== currentUser?.uid && (
+              {msg.user.uid !== currentUser?.uid && (
                 <Flex direction="column" align="center" justify="center">
                   <Box borderRadius={"50%"} borderWidth={2} p={1}>
                     <Image
-                      src={groupImg}
-                      width="40px"
-                      height="40px"
+                      src={msg.user.avatar}
+                      width="30px"
+                      height="30px"
                       borderRadius={"40%"}
                     />
                   </Box>
@@ -112,7 +113,7 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
                 px={4}
                 borderRadius={24}
                 bg={
-                  msg.user.id === currentUser?.uid ? "gray.200" : "linkedin.100"
+                  msg.user.uid === currentUser?.uid ? "brand.100" : "brand.400"
                 }
                 color="blackAlpha.800"
               >
@@ -120,13 +121,13 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
               </Text>
               <Box mx={1} />
 
-              {msg.user.id === currentUser?.uid && (
+              {msg.user.uid === currentUser?.uid && (
                 <Box>
                   <Box borderRadius={"50%"} borderWidth={2} p={1}>
                     <Image
-                      src={groupImg}
-                      width="40px"
-                      height="40px"
+                      src={msg.user.avatar}
+                      width="30px"
+                      height="30px"
                       borderRadius={"40%"}
                     />
                   </Box>
@@ -152,7 +153,9 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
         <Button
           onClick={handleSubmitMessage}
           _focus={{ outline: "none" }}
-          colorScheme="facebook"
+          bg="brand.600"
+          color="white"
+          _hover={{ bg: "brand.800" }}
         >
           Submit
         </Button>

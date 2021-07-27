@@ -57,8 +57,8 @@ const Login = () => {
   const displayErrors = () => {
     return (
       errors &&
-      errors.map((error, i) => (
-        <Flex key={i.toString()} w="80%" align="left" p={1}>
+      errors.map((error, index) => (
+        <Flex key={index.toString()} w="80%" align="left" p={1}>
           <Text color="red.700">* {error.message}</Text>
         </Flex>
       ))
@@ -122,7 +122,13 @@ const Login = () => {
         {errors.length > 0 && displayErrors()}
         <Box my={3} />
 
-        <Button width="120px" colorScheme="facebook" onClick={handleSubmit}>
+        <Button
+          width="120px"
+          bg="brand.600"
+          color="white"
+          _hover={{ backgroundColor: "brand.800" }}
+          onClick={handleSubmit}
+        >
           Login
         </Button>
 
@@ -132,8 +138,8 @@ const Login = () => {
           <Text pr={1}>Don't have an account?</Text>
           <Button
             variant="link"
+            color="brand.600"
             _focus={{ outline: "none" }}
-            color="facebook.300"
             onClick={() => history.push("/signup")}
           >
             Signup
