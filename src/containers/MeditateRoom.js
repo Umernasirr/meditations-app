@@ -35,7 +35,6 @@ const MeditationRooms = () => {
       })
 
       .then((roomre) => {
-        console.log(doc);
         roomsRef.doc(doc.id).collection("members").add({
           createdAt: new Date().getTime(),
           user: currentUser,
@@ -50,18 +49,32 @@ const MeditationRooms = () => {
   };
 
   useEffect(() => {
-    return roomsRef.onSnapshot((snapshot) => {
-      const roomsData = [];
-      snapshot &&
+    if (currentUser) {
+      return roomsRef.onSnapshot((snapshot) => {
+        const roomsData = [];
         snapshot.forEach((doc) => {
-          // doc.data().
-          // if(doc)
-          roomsData.push({ ...doc.data(), id: doc.id });
+          let isMember = false;
+          const members = roomsRef
+            .doc(doc.id)
+            .collection("members")
+            .get()
+            .then((ref) => {
+              ref.forEach((reff) => {
+                if (reff.data().user.uid === currentUser.uid) {
+                  isMember = true;
+                }
+              });
+            })
+            .then(() => {
+              if (isMember) {
+                roomsData.push({ ...doc.data(), id: doc.id });
+                setRooms(roomsData);
+              }
+            });
         });
-
-      setRooms(roomsData);
-    });
-  }, []);
+      });
+    }
+  }, [currentUser]);
 
   return (
     <Flex
