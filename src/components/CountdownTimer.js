@@ -63,7 +63,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying }) => {
         colors={[["#6269A0"], ["#ee4f4f"]]}
         onComplete={() => {
           setIsCompleted(true);
-
           return [false, 1000];
         }}
       >
