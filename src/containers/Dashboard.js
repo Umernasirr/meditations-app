@@ -72,11 +72,7 @@ const Dashboard = () => {
         </Flex>
 
         <Flex>
-          <Image
-            src={meditationCoverImg}
-            objectFit="contain"
-            borderRadius={32}
-          />
+          <Image src={meditationCoverImg} C="contain" borderRadius={32} />
         </Flex>
       </Grid>
     </Flex>

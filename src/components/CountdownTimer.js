@@ -1,23 +1,42 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  Text,
-} from "@chakra-ui/react";
-import React, { useState } from "react";
+import { Box, Button, Flex, Image, Text, Tooltip } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import { AiOutlineFieldTime } from "react-icons/ai";
+import firebase from "../firebase";
 
-const CountdownTimer = ({ isPlaying, setIsPlaying }) => {
-  const [duration, setDuration] = useState(2);
+const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
+  const [members, setMembers] = useState([]);
+  const roomsRef = firebase.firestore().collection("rooms");
+
+  useEffect(() => {
+    setMembers([]);
+
+    if (!selectedRoom) {
+      return;
+    }
+
+    const memberListener = roomsRef
+      .doc(selectedRoom.id)
+      .collection("members")
+      //  .orderBy("createdAt", "asc")
+      .onSnapshot((querySnapshot) => {
+        const members = querySnapshot.docs.map((doc) => {
+          const firebaseData = doc.data();
+
+          const data = {
+            id: doc.id,
+            createdAt: new Date().getTime(),
+            ...firebaseData,
+          };
+
+          return data;
+        });
+        setMembers(members);
+      });
+
+    return () => memberListener();
+  }, [selectedRoom]);
+
+  const [duration, setDuration] = useState(20);
   const [key, setKey] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -53,6 +72,50 @@ const CountdownTimer = ({ isPlaying, setIsPlaying }) => {
 
   return (
     <Flex direction="column" align="center">
+      <Flex w="full" h="40px" borderRadius={16} align="center" justify="center">
+        {members.length > 0
+          ? members.map((member) => {
+              const user = member.user;
+
+              const names = user.displayName.split(" ");
+
+              return (
+                <Flex direction="column" align="center" justify="center">
+                  <Tooltip
+                    placement="top"
+                    fontSize="sm"
+                    label={user.displayName}
+                  >
+                    <Box
+                      mx={1}
+                      borderRadius="50%"
+                      minW="60px"
+                      bg="brand.100"
+                      p={4}
+                      boxShadow="md"
+                      _hover={{
+                        bg: "brand.200",
+                        cursor: "pointer",
+                        color: "gray.700",
+                      }}
+                    >
+                      <Flex justify="center" align="center">
+                        {names.map((name, index) =>
+                          index === names.length - 1 ? (
+                            <Text>{`${name[0]}.`}</Text>
+                          ) : (
+                            <Text>{`${name[0]}`}</Text>
+                          )
+                        )}
+                      </Flex>
+                    </Box>
+                  </Tooltip>
+                </Flex>
+              );
+            })
+          : null}
+      </Flex>
+      <Box my={4} />
       <CountdownCircleTimer
         key={key}
         size={400}
@@ -87,7 +150,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying }) => {
       <Box mt={2} />
       {isCompleted ? (
         <Button
-          height="60px"
+          height="40px"
           bg="transparent"
           borderRadius={32}
           variant="link"
@@ -106,7 +169,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying }) => {
           </Text>
         </Button>
       ) : (
-        <Box height="60px" />
+        <Box height="40px" />
       )}
     </Flex>
   );

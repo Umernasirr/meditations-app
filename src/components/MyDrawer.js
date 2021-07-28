@@ -143,19 +143,6 @@ const MyDrawer = ({
               </Flex>
             ))}
         </DrawerBody>
-
-        <DrawerFooter>
-          <Button variant="outline" mr={3} onClick={() => setDrawerOpen(false)}>
-            Cancel
-          </Button>
-          <Button
-            bg="brand.600"
-            color="gray.100"
-            _hover={{ backgroundColor: "brand.800" }}
-          >
-            Save
-          </Button>
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
