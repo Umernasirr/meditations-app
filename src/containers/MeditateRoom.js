@@ -22,9 +22,13 @@ const MeditationRooms = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [roomError, setRoomError] = useState("");
   const [rooms, setRooms] = useState(undefined);
+  const [isUPdate, setIsUPdate] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const [showJoinModal, setShowJoinModal] = useState(false);
-  const roomsRef = firebase.firestore().collection("rooms");
+  const [roomsRef, setroomsRef] = useState(
+    firebase.firestore().collection("rooms")
+  );
+  // const roomsRef = firebase.firestore().collection("rooms");
   const handleRoomCreate = () => {
     let doc = roomsRef.doc();
 
@@ -44,6 +48,30 @@ const MeditationRooms = () => {
             user: currentUser,
           });
       });
+    setIsUPdate(!isUPdate);
+    roomsRef.onSnapshot((snapshot) => {
+      const roomsData = [];
+      snapshot.forEach((doc) => {
+        let isMember = false;
+        const members = roomsRef
+          .doc(doc.id)
+          .collection("members")
+          .get()
+          .then((ref) => {
+            ref.forEach((reff) => {
+              if (reff.data().user.uid === currentUser.uid) {
+                isMember = true;
+              }
+            });
+          })
+          .then(() => {
+            if (isMember) {
+              roomsData.push({ ...doc.data(), id: doc.id });
+              setRooms(roomsData);
+            }
+          });
+      });
+    });
 
     setRoomName("");
   };
@@ -80,6 +108,30 @@ const MeditationRooms = () => {
                     createdAt: new Date().getTime(),
                     user: currentUser,
                   });
+
+                roomsRef.onSnapshot((snapshot) => {
+                  const roomsData = [];
+                  snapshot.forEach((doc) => {
+                    let isMember = false;
+                    const members = roomsRef
+                      .doc(doc.id)
+                      .collection("members")
+                      .get()
+                      .then((ref) => {
+                        ref.forEach((reff) => {
+                          if (reff.data().user.uid === currentUser.uid) {
+                            isMember = true;
+                          }
+                        });
+                      })
+                      .then(() => {
+                        if (isMember) {
+                          setRooms(roomsData);
+                          return roomsData.push({ ...doc.data(), id: doc.id });
+                        }
+                      });
+                  });
+                });
               }
             });
         }
@@ -89,7 +141,7 @@ const MeditationRooms = () => {
 
   useEffect(() => {
     if (currentUser) {
-      return roomsRef.onSnapshot((snapshot) => {
+      const roomListener = roomsRef.onSnapshot((snapshot) => {
         const roomsData = [];
         snapshot.forEach((doc) => {
           let isMember = false;
@@ -112,8 +164,9 @@ const MeditationRooms = () => {
             });
         });
       });
+      return () => roomListener();
     }
-  }, [currentUser]);
+  }, [currentUser, isUPdate]);
 
   return (
     <Flex
