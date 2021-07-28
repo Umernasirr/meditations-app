@@ -69,27 +69,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying }) => {
       </CountdownCircleTimer>
       <Box my={4} />
       <Flex direction="row" align="center" justify="center">
-        <Flex justify="center" align="flex-end">
-          <AiOutlineFieldTime size={40} color="white" />
-          <Box mr={2} />
-          <NumberInput
-            step={1}
-            defaultValue={duration}
-            onChange={(val) => {
-              setDuration(val);
-              setKey(key + 1);
-            }}
-            min={1}
-            max={10000}
-          >
-            <NumberInputField borderRadius={8} bg="white" value={duration} />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-          <Box mr={4} />
-        </Flex>
         <Button
           width="200px"
           height="50px"
