@@ -17,11 +17,10 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import { AiOutlineFieldTime } from "react-icons/ai";
 
 const CountdownTimer = ({ isPlaying, setIsPlaying }) => {
-  const [duration, setDuration] = useState(1);
+  const [duration, setDuration] = useState(2);
   const [key, setKey] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
 
-  console.log(duration);
   const renderTime = ({ remainingTime }) => {
     if (remainingTime === 0) {
       return (
@@ -59,7 +58,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying }) => {
         size={400}
         isPlaying={isPlaying}
         strokeWidth={16}
-        duration={duration ? duration : 0}
+        duration={duration}
         colors={[["#6269A0"], ["#ee4f4f"]]}
         onComplete={() => {
           setIsCompleted(true);
@@ -74,12 +73,13 @@ const CountdownTimer = ({ isPlaying, setIsPlaying }) => {
           <AiOutlineFieldTime size={40} color="white" />
           <Box mr={2} />
           <NumberInput
-            step={5}
+            step={1}
             defaultValue={duration}
             onChange={(val) => {
               setDuration(val);
+              setKey(key + 1);
             }}
-            min={5}
+            min={1}
             max={10000}
           >
             <NumberInputField borderRadius={8} bg="white" value={duration} />
