@@ -8,7 +8,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/modal";
-import React from "react";
+import React, { useState } from "react";
 import { AiOutlineMessage } from "react-icons/ai";
 
 const JoinRoomModal = ({
@@ -18,6 +18,7 @@ const JoinRoomModal = ({
   setRoomName,
   handleJoinRoom,
 }) => {
+  const [code, setCode] = useState("");
   return (
     <Modal
       size="xl"

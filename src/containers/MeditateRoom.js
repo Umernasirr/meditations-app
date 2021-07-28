@@ -20,31 +20,70 @@ const MeditationRooms = () => {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isChatDrawerOpen, setChatDrawerOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [roomError, setRoomError] = useState("");
   const [rooms, setRooms] = useState(undefined);
   const { currentUser } = useSelector((state) => state.user);
   const [showJoinModal, setShowJoinModal] = useState(false);
-
   const roomsRef = firebase.firestore().collection("rooms");
   const handleRoomCreate = () => {
     let doc = roomsRef.doc();
 
     setShowModal(false);
+
     doc
       .set({
         title: roomName,
+        // invitationCode: Math.floor(1000 + Math.random() * 9000),
       })
-
       .then((roomre) => {
-        roomsRef.doc(doc.id).collection("members").add({
-          createdAt: new Date().getTime(),
-          user: currentUser,
-        });
+        roomsRef
+          .doc(doc.id)
+          .collection("members")
+          .add({
+            createdAt: new Date().getTime(),
+            user: currentUser,
+          });
       });
 
     setRoomName("");
   };
 
   const handleJoinRoom = () => {
+    let isMember = false;
+    const data = roomsRef
+      .doc(roomName)
+      .get()
+      .then((doc) => {
+        if (!doc.data() || doc.data() === undefined) {
+          setRoomError("No room found");
+        } else {
+          roomsRef
+            .doc(roomName)
+            .collection("members")
+            .get()
+            .then((col) => {
+              col.forEach((doc) => {
+                // roomsData.push({ ...doc.data(), id: doc.id });
+                if (doc.data().user.uid === currentUser.uid) {
+                  isMember = true;
+                }
+              });
+            })
+            .then(() => {
+              if (isMember) {
+                setRoomError("Already a part of this room");
+              } else {
+                roomsRef
+                  .doc(roomName)
+                  .collection("members")
+                  .add({
+                    createdAt: new Date().getTime(),
+                    user: currentUser,
+                  });
+              }
+            });
+        }
+      });
     setRoomName("");
   };
 
