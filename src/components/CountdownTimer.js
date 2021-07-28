@@ -36,7 +36,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
     return () => memberListener();
   }, [selectedRoom]);
 
-  const [duration, setDuration] = useState(2);
+  const [duration, setDuration] = useState(20);
   const [key, setKey] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
 
