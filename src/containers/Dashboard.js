@@ -60,7 +60,7 @@ const Dashboard = () => {
           </Flex>
           <Box mt={4} />
           <LiveRooms />
-          <Flex width="80%" justify="flex-end">
+          <Flex width="60%" py={2} justify="flex-end">
             <Button
               color="brand.600"
               bg="transparent"
@@ -72,11 +72,7 @@ const Dashboard = () => {
         </Flex>
 
         <Flex>
-          <Image
-            src={meditationCoverImg}
-            objectFit="contain"
-            borderRadius={32}
-          />
+          <Image src={meditationCoverImg} C="contain" borderRadius={32} />
         </Flex>
       </Grid>
     </Flex>

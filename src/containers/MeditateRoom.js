@@ -22,7 +22,6 @@ const MeditationRooms = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [roomError, setRoomError] = useState("");
   const [rooms, setRooms] = useState(undefined);
-  const [isUPdate, setIsUPdate] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [roomsRef, setroomsRef] = useState(
@@ -37,18 +36,27 @@ const MeditationRooms = () => {
     doc
       .set({
         title: roomName,
-        // invitationCode: Math.floor(1000 + Math.random() * 9000),
       })
-      .then((roomre) => {
+      .then(() => {
         roomsRef
           .doc(doc.id)
           .collection("members")
           .add({
             createdAt: new Date().getTime(),
             user: currentUser,
+          })
+          .then(() => {
+            const newRoom = {
+              title: roomName,
+              id: doc.id,
+              user: currentUser,
+              createdAt: new Date().getTime(),
+            };
+
+            setSelectedRoom(newRoom);
+            setChatDrawerOpen(true);
           });
       });
-    setIsUPdate(!isUPdate);
     roomsRef.onSnapshot((snapshot) => {
       const roomsData = [];
       snapshot.forEach((doc) => {
@@ -101,13 +109,10 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef
-                  .doc(roomName)
-                  .collection("members")
-                  .add({
-                    createdAt: new Date().getTime(),
-                    user: currentUser,
-                  });
+                roomsRef.doc(roomName).collection("members").add({
+                  createdAt: new Date().getTime(),
+                  user: currentUser,
+                });
 
                 roomsRef.onSnapshot((snapshot) => {
                   const roomsData = [];
@@ -166,7 +171,7 @@ const MeditationRooms = () => {
       });
       return () => roomListener();
     }
-  }, [currentUser, isUPdate]);
+  }, [currentUser]);
 
   return (
     <Flex
@@ -177,17 +182,17 @@ const MeditationRooms = () => {
       bgImage={backgroundImg}
       bgSize="cover"
     >
+      <Header
+        setShowJoinModal={setShowJoinModal}
+        setDrawerOpen={setDrawerOpen}
+        setShowModal={setShowModal}
+      />
       <MyDrawer
         isDrawerOpen={isDrawerOpen}
         setDrawerOpen={setDrawerOpen}
         rooms={rooms}
         setSelectedRoom={setSelectedRoom}
         setChatDrawerOpen={setChatDrawerOpen}
-      />
-      <Header
-        setShowJoinModal={setShowJoinModal}
-        setDrawerOpen={setDrawerOpen}
-        setShowModal={setShowModal}
       />
 
       <ChatDrawer
@@ -215,7 +220,11 @@ const MeditationRooms = () => {
       />
       <Flex mx={24} direction="column" h="full">
         <Flex h="full" w="full" align="center" justify="center">
-          <CountdownTimer isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
+          <CountdownTimer
+            isPlaying={isPlaying}
+            setIsPlaying={setIsPlaying}
+            selectedRoom={selectedRoom}
+          />
         </Flex>
 
         <Spacer />

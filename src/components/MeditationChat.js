@@ -152,7 +152,12 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
 
             <Box mt={4} />
             <Flex justify="flex-start" w="full">
-              <Input value={selectedRoom.id} />
+              <Input
+                value={selectedRoom.id}
+                readOnly
+                borderColor="brand.400"
+                borderWidth={2}
+              />
 
               <Button
                 bg="brand.600"
