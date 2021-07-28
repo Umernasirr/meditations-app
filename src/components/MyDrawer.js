@@ -25,7 +25,8 @@ const MyDrawer = ({
   setSelectedRoom,
   setChatDrawerOpen,
 }) => {
-  const [filteredRooms, setFilteredRooms] = useState(rooms ? rooms : []);
+  const [filteredRooms, setFilteredRooms] = useState([]);
+  const [searchTxt, setSearchTxt] = useState("");
 
   const handleChangeSearch = (e) => {
     const query = e.target.value;
@@ -47,12 +48,13 @@ const MyDrawer = ({
   };
 
   useEffect(() => {
-    if (rooms && filteredRooms && filteredRooms.length !== rooms.length) {
+    console.log("HEY");
+    if (rooms && rooms.length > 0) {
       setFilteredRooms(rooms);
     }
-  }, [rooms]);
+    console.log(filteredRooms);
+  }, []);
 
-  const [searchTxt, setSearchTxt] = useState("");
   return (
     <Drawer
       bg="red"
@@ -98,8 +100,7 @@ const MyDrawer = ({
 
           <Box my={4} />
 
-          {rooms &&
-            rooms.length > 0 &&
+          {filteredRooms.length > 0 &&
             filteredRooms.map((chat, index) => (
               <Flex
                 key={index.toString()}

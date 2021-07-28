@@ -8,7 +8,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/modal";
-import React, { useState } from "react";
+import React from "react";
 import { AiOutlineMessage } from "react-icons/ai";
 
 const JoinRoomModal = ({
@@ -18,7 +18,6 @@ const JoinRoomModal = ({
   setRoomName,
   handleJoinRoom,
 }) => {
-  const [code, setCode] = useState("");
   return (
     <Modal
       size="xl"
@@ -53,7 +52,10 @@ const JoinRoomModal = ({
           >
             Cancel
           </Button>
-          <Button colorScheme="facebook" onClick={() => handleJoinRoom()}>
+          <Button
+            colorScheme="facebook"
+            onClick={() => handleJoinRoom(roomName)}
+          >
             Join Room
           </Button>
         </ModalFooter>

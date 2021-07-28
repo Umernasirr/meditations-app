@@ -49,10 +49,6 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
         messageTxt,
         createdAt: new Date().getTime(),
         user: currentUser,
-        //  user: {
-        //    _id: currentUser.uid,
-        //    email: currentUser.email,
-        //  },
       });
       scrollToBottom();
       setMessageTxt("");
@@ -100,16 +96,19 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
               my={2}
             >
               {msg.user.uid !== currentUser?.uid && (
-                <Flex direction="column" align="center" justify="center">
-                  <Box borderRadius={"50%"} borderWidth={2} p={1}>
+                <Flex direction="column" justify="center" align="center">
+                  <Box borderRadius={"50%"} borderWidth={0} p={1}>
                     <Image
-                      src={msg.user.avatar}
+                      src={msg.user.photoURL}
                       width="30px"
                       height="30px"
                       borderRadius={"40%"}
                     />
                   </Box>
-                  <Text>{msg.user.displayName}</Text>
+
+                  <Text fontWeight="bold" fontSize={12}>
+                    {msg.user.displayName && msg.user.displayName.split(" ")[0]}
+                  </Text>
                 </Flex>
               )}
               <Box mx={1} />
@@ -127,18 +126,20 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
               <Box mx={1} />
 
               {msg.user.uid === currentUser?.uid && (
-                <Box>
-                  <Box borderRadius={"50%"} borderWidth={2} p={1}>
+                <Flex direction="column" justify="center" align="center">
+                  <Box borderRadius={"50%"} borderWidth={0} p={1}>
                     <Image
-                      src={msg.user.avatar}
+                      src={msg.user.photoURL}
                       width="30px"
                       height="30px"
                       borderRadius={"40%"}
                     />
                   </Box>
 
-                  <Text>{msg.user.displayName}</Text>
-                </Box>
+                  <Text fontWeight="bold" fontSize={12}>
+                    {msg.user.displayName && msg.user.displayName.split(" ")[0]}
+                  </Text>
+                </Flex>
               )}
 
               {index === messages.length - 1 && <div ref={messagesEndRef} />}

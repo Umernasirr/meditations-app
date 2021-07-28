@@ -10,6 +10,7 @@ import ChatDrawer from "../components/ChatDrawer";
 import CountdownTimer from "../components/CountdownTimer";
 import CreateNewRoomModal from "../components/CreateNewRoomModal";
 import JoinRoomModal from "../components/JoinRoomModal";
+import { IoMdReturnRight } from "react-icons/io";
 
 const backgroundImg = process.env.PUBLIC_URL + "/bg_img.jpg";
 
@@ -31,8 +32,6 @@ const MeditationRooms = () => {
   const handleRoomCreate = () => {
     let doc = roomsRef.doc();
 
-    setShowModal(false);
-
     doc
       .set({
         title: roomName,
@@ -52,8 +51,9 @@ const MeditationRooms = () => {
               user: currentUser,
               createdAt: new Date().getTime(),
             };
-
+            setShowModal(false);
             setSelectedRoom(newRoom);
+
             setChatDrawerOpen(true);
           });
       });
@@ -144,33 +144,79 @@ const MeditationRooms = () => {
     setRoomName("");
   };
 
+  // useEffect(() => {
+  //   if (currentUser) {
+  //     const roomListener = roomsRef.onSnapshot((snapshot) => {
+  //       const roomsData = [];
+  //       snapshot.forEach((doc) => {
+  //         let isMember = false;
+  //         const members = roomsRef
+  //           .doc(doc.id)
+  //           .collection("members")
+  //           .get()
+  //           .then((ref) => {
+  //             ref.forEach((reff) => {
+  //               if (reff.data().user.uid === currentUser.uid) {
+  //                 isMember = true;
+  //               }
+  //             });
+  //           })
+  //           .then(() => {
+  //             if (isMember) {
+  //               roomsData.push({ ...doc.data(), id: doc.id });
+  //               setRooms(roomsData);
+  //             }
+  //           });
+  //       });
+  //     });
+  //     return () => roomListener();
+  //   }
+  // }, [currentUser]);
+
   useEffect(() => {
-    if (currentUser) {
-      const roomListener = roomsRef.onSnapshot((snapshot) => {
-        const roomsData = [];
-        snapshot.forEach((doc) => {
-          let isMember = false;
-          const members = roomsRef
-            .doc(doc.id)
-            .collection("members")
-            .get()
-            .then((ref) => {
-              ref.forEach((reff) => {
-                if (reff.data().user.uid === currentUser.uid) {
-                  isMember = true;
-                }
-              });
-            })
-            .then(() => {
-              if (isMember) {
-                roomsData.push({ ...doc.data(), id: doc.id });
-                setRooms(roomsData);
-              }
-            });
-        });
-      });
-      return () => roomListener();
+    setRooms([]);
+    const roomsData = [];
+
+    if (!currentUser) {
+      return;
     }
+    const roomListener = roomsRef.onSnapshot((querySnapshot) => {
+      const rooms = querySnapshot.docs.forEach((doc) => {
+        roomsRef
+          .doc(doc.id)
+          .collection("members")
+          .get()
+          .then((ref) => {
+            const memberInRoom = ref.docs.filter((member) => {
+              return member.data().user.uid === currentUser?.uid;
+            });
+
+            if (memberInRoom) {
+              roomsData.push({ ...doc.data(), id: doc.id });
+            }
+
+            console.log(roomsData);
+            // setRooms(tempRooms);
+
+            // ref.forEach((reff) => {
+            //   if (reff.data().user.uid === currentUser.uid) {
+            //     isMember = true;
+            //   }
+            // });
+          });
+
+        setRooms(roomsData);
+
+        // .then(() => {
+        //   if (isMember) {
+        //     roomsData.push({ ...doc.data(), id: doc.id });
+        //     setRooms(roomsData);
+        //   }
+        // });
+      });
+    });
+
+    return () => roomListener();
   }, [currentUser]);
 
   return (
@@ -187,6 +233,7 @@ const MeditationRooms = () => {
         setDrawerOpen={setDrawerOpen}
         setShowModal={setShowModal}
       />
+
       <MyDrawer
         isDrawerOpen={isDrawerOpen}
         setDrawerOpen={setDrawerOpen}

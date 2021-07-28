@@ -76,15 +76,19 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
         {members.length > 0
           ? members.map((member) => {
               const user = member.user;
-
-              const names = user.displayName.split(" ");
+              let names;
+              if (user.displayName) {
+                names = user.displayName.split(" ");
+              } else {
+                names = ["Unknown"];
+              }
 
               return (
                 <Flex direction="column" align="center" justify="center">
                   <Tooltip
                     placement="top"
                     fontSize="sm"
-                    label={user.displayName}
+                    label={user.displayName ? user.displayName : "Unknown"}
                   >
                     <Box
                       mx={1}
