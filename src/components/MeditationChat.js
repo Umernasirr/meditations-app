@@ -12,6 +12,7 @@ import {
   Spacer,
   IconButton,
   Tooltip,
+  useClipboard,
 } from "@chakra-ui/react";
 import {
   AiOutlineCloseCircle,
@@ -29,6 +30,10 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
   const [messages, setMessages] = useState([]);
   const [messageTxt, setMessageTxt] = useState("");
   const { currentUser } = useSelector((state) => state.user);
+  const [value, setValue] = React.useState("Hello world");
+  const { hasCopied, onCopy } = useClipboard(
+    selectedRoom.id ? selectedRoom.id : ""
+  );
 
   const roomsRef = firebase.firestore().collection("rooms");
 
@@ -85,7 +90,7 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
       <Box my={4} />
 
       <Flex px={0} direction="column">
-        {messages.length > 0 &&
+        {messages.length > 0 ? (
           messages.map((msg, index) => (
             <Flex
               key={index.toString()}
@@ -138,7 +143,29 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
 
               {index === messages.length - 1 && <div ref={messagesEndRef} />}
             </Flex>
-          ))}
+          ))
+        ) : (
+          <Flex w="full" justify="center" align="center" direction="column">
+            <Text textAlign="center" fontWeight="medium" fontSize={18} mx={8}>
+              Invite More by Copying the Room Code Below:
+            </Text>
+
+            <Box mt={4} />
+            <Flex justify="flex-start" w="full">
+              <Input value={selectedRoom.id} />
+
+              <Button
+                bg="brand.600"
+                color="white"
+                _hover={{ bg: "brand.800" }}
+                onClick={onCopy}
+                ml={2}
+              >
+                {hasCopied ? "Copied" : "Copy"}
+              </Button>
+            </Flex>
+          </Flex>
+        )}
       </Flex>
       <Spacer />
       <Box py={2} />

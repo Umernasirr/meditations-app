@@ -52,7 +52,6 @@ const MyDrawer = ({
     }
   }, [rooms]);
 
-  console.log(rooms);
   const [searchTxt, setSearchTxt] = useState("");
   return (
     <Drawer

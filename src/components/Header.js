@@ -26,12 +26,10 @@ const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal, hasBg }) => {
     firebase
       .auth()
       .signOut()
-      .then(function() {
+      .then(function () {
         dispatch(clearUser);
       })
-      .catch(function(error) {
-        console.log(error);
-      });
+      .catch(function (error) {});
   };
   return (
     <Flex

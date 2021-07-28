@@ -46,7 +46,6 @@ const Login = () => {
           history.push("/rooms");
         })
         .catch((err) => {
-          console.log(err);
           setErrors([err]);
         });
     } else {

@@ -25,7 +25,7 @@ const JoinRoomModal = ({
       isOpen={showJoinModal}
       onClose={() => setShowJoinModal(false)}
     >
-      <ModalContent>
+      <ModalContent bg="gray.100">
         <ModalHeader>Join an Existing Room</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -36,7 +36,7 @@ const JoinRoomModal = ({
             <Input
               value={roomName}
               onChange={(e) => setRoomName(e.target.value)}
-              placeholder="Enter Room Name"
+              placeholder="Enter Room Code"
               borderColor="brand.600"
               borderWidth={2}
               _focus={{ outline: "none" }}
