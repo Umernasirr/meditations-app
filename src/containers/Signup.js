@@ -81,8 +81,8 @@ const Signup = () => {
 
   const saveUser = (createdUser) => {
     return userRef.doc(createdUser.user.uid).set({
-      name: createdUser.user.displayName,
-      avatar: createdUser.user.photoURL,
+      displayName: createdUser.user.displayName,
+      photoURL: createdUser.user.photoURL,
     });
   };
 
