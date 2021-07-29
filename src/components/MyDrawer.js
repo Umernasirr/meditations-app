@@ -15,47 +15,55 @@ import {
   Image,
   filter,
 } from "@chakra-ui/react";
+import firebase from "../firebase";
 
 const groupImg = process.env.PUBLIC_URL + "/group_icon.png";
 
 const MyDrawer = ({
   isDrawerOpen,
   setDrawerOpen,
-  rooms,
   setSelectedRoom,
   setChatDrawerOpen,
+  currentUser,
+  rooms,
+  setRooms,
 }) => {
-  const [filteredRooms, setFilteredRooms] = useState(rooms ? rooms : []);
+  const [filteredRooms, setFilteredRooms] = useState([]);
+  const [searchTxt, setSearchTxt] = useState(" ");
+  const roomsRef = firebase.firestore().collection("rooms");
+  const roomsData = [];
+  const [key, setKey] = useState(0);
 
   const handleChangeSearch = (e) => {
     const query = e.target.value;
+    setSearchTxt(query);
 
     if (query === "") {
-      setSearchTxt(query);
       setFilteredRooms(rooms);
     } else {
       if (rooms && rooms.length > 0) {
-        setSearchTxt(query);
-
         const tempRooms = rooms.filter((room) =>
           room.title.toLowerCase().includes(query.toLowerCase())
         );
 
-        setFilteredRooms(tempRooms);
+        // setFilteredRooms(tempRooms);
       }
     }
   };
 
   useEffect(() => {
-    if (rooms && filteredRooms && filteredRooms.length !== rooms.length) {
-      setFilteredRooms(rooms);
-    }
-  }, [rooms]);
+    setFilteredRooms(rooms);
 
-  const [searchTxt, setSearchTxt] = useState("");
+    setTimeout(() => {
+      setSearchTxt("");
+      console.log("HEy");
+    }, 5000);
+  }, [currentUser, rooms]);
+
   return (
     <Drawer
       bg="red"
+      key={key}
       isOpen={isDrawerOpen}
       placement="left"
       onClose={() => setDrawerOpen(false)}
@@ -98,8 +106,7 @@ const MyDrawer = ({
 
           <Box my={4} />
 
-          {rooms &&
-            rooms.length > 0 &&
+          {filteredRooms &&
             filteredRooms.map((chat, index) => (
               <Flex
                 key={index.toString()}

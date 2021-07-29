@@ -10,11 +10,12 @@ import ChatDrawer from "../components/ChatDrawer";
 import CountdownTimer from "../components/CountdownTimer";
 import CreateNewRoomModal from "../components/CreateNewRoomModal";
 import JoinRoomModal from "../components/JoinRoomModal";
+import { IoMdReturnRight } from "react-icons/io";
 
 const backgroundImg = process.env.PUBLIC_URL + "/bg_img.jpg";
 
 const MeditationRooms = () => {
-  const [selectedRoom, setSelectedRoom] = useState(undefined);
+  const [selectedRoom, setSelectedRoom] = useState([]);
   const [roomName, setRoomName] = useState("");
   const [duration, setDuration] = useState(10);
   const [showModal, setShowModal] = useState(false);
@@ -22,12 +23,10 @@ const MeditationRooms = () => {
   const [isChatDrawerOpen, setChatDrawerOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [roomError, setRoomError] = useState("");
-  const [rooms, setRooms] = useState(undefined);
+  const [rooms, setRooms] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
   const [showJoinModal, setShowJoinModal] = useState(false);
-  const [roomsRef, setroomsRef] = useState(
-    firebase.firestore().collection("rooms")
-  );
+  const roomsRef = firebase.firestore().collection("rooms");
   // const roomsRef = firebase.firestore().collection("rooms");
   const handleRoomCreate = () => {
     // console.log(duration, "duration");
@@ -54,6 +53,7 @@ const MeditationRooms = () => {
               createdAt: new Date().getTime(),
             };
             setSelectedRoom(newRoom);
+
             setChatDrawerOpen(true);
             setShowJoinModal(false);
           });
@@ -148,31 +148,39 @@ const MeditationRooms = () => {
   };
 
   useEffect(() => {
-    if (currentUser) {
-      const roomListener = roomsRef.onSnapshot((snapshot) => {
-        const roomsData = [];
-        snapshot.forEach((doc) => {
-          let isMember = false;
-          const members = roomsRef
-            .doc(doc.id)
-            .collection("members")
-            .get()
-            .then((ref) => {
-              ref.forEach((reff) => {
-                if (reff.data().user.uid === currentUser.uid) {
-                  isMember = true;
-                }
-              });
-            })
-            .then(() => {
-              if (isMember) {
-                roomsData.push({ ...doc.data(), id: doc.id });
-                setRooms(roomsData);
-              }
-            });
-        });
+    const getRooms = async () => {
+      setRooms([]);
+      const tempRooms = [];
+      const firebaseData = await roomsRef.get();
+
+      firebaseData.docs.map(async (room) => {
+        const memberCollection = await roomsRef
+          .doc(room.id)
+          .collection("members")
+          .get();
+
+        const myRooms = memberCollection.docs.filter(
+          (memberData) => memberData.data().user.uid === currentUser.uid
+        );
+
+        console.log(room.id);
+        if (myRooms.length > 0) {
+          const roomData = {
+            id: room.id,
+            ...room.data(),
+            ...myRooms[0]?.data(),
+          };
+
+          tempRooms.push(roomData);
+        }
+        //
       });
-      return () => roomListener();
+
+      setRooms(tempRooms);
+    };
+
+    if (currentUser) {
+      getRooms();
     }
   }, [currentUser]);
 
@@ -190,12 +198,15 @@ const MeditationRooms = () => {
         setDrawerOpen={setDrawerOpen}
         setShowModal={setShowModal}
       />
+
       <MyDrawer
         isDrawerOpen={isDrawerOpen}
         setDrawerOpen={setDrawerOpen}
-        rooms={rooms}
         setSelectedRoom={setSelectedRoom}
         setChatDrawerOpen={setChatDrawerOpen}
+        currentUser={currentUser}
+        rooms={rooms}
+        setRooms={setRooms}
       />
 
       <ChatDrawer
@@ -204,7 +215,6 @@ const MeditationRooms = () => {
         selectedRoom={selectedRoom}
         setSelectedRoom={setSelectedRoom}
       />
-
       {/* Join Room Model */}
       <JoinRoomModal
         showJoinModal={showJoinModal}
