@@ -69,21 +69,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
         } else {
           setIsPlaying(false);
         }
-
-        // const members = querySnapshot.docs.map((doc) => {
-        //   console.log(doc.data(), "rom data");
-        //   //   const firebaseData = doc.data();
-
-        //   //   const data = {
-        //   //     id: doc.id,
-        //   //     createdAt: new Date().getTime(),
-        //   //     ...firebaseData,
-        //   //   };
-
-        //   //   return data;
-        //   // });
-        //   // setMembers(members);
-        // });
       });
 
     // }
@@ -98,15 +83,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
       startTimerStamp: new Date().getTime(),
       status: true,
     });
-    // let doc = roomsRef.doc();
-    // roomsRef
-    // .doc(doc.id).set({
-    //   timerStartTime: new Date();
-    // })
-    // doc.set({
-    //   title: roomName,
-    //   duration: duration,
-    // });
+
     setIsPlaying(true);
   };
   const renderTime = ({ remainingTime }) => {
