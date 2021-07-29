@@ -6,38 +6,15 @@ import firebase from "../firebase";
 const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   const [members, setMembers] = useState([]);
   const [localSelectedRoom, setLocalSelectedRoom] = useState([]);
-  const [duration, setDuration] = useState(10);
+  const [duration, setDuration] = useState(20);
   const roomsRef = firebase.firestore().collection("rooms");
-  useEffect(() => {
-    if (selectedRoom) {
-      console.log(selectedRoom, "come");
-      setLocalSelectedRoom(selectedRoom);
-      if (
-        selectedRoom.status === false ||
-        selectedRoom.startTimerStamp === -1
-      ) {
-        // setDuration(selectedRoom.duration);
-        console.log(selectedRoom.duration);
-      } else {
-        const difference = Math.ceil(
-          new Date().getTime() / 1000 - selectedRoom.startTimerStamp.seconds
-        );
-        setDuration(difference);
-      }
-      if (selectedRoom.status === true) {
-        setIsPlaying(true);
-      } else {
-        setIsPlaying(false);
-      }
-    }
-  }, [selectedRoom]);
+
   useEffect(() => {
     setMembers([]);
 
     if (!selectedRoom) {
       return;
     }
-    console.log(selectedRoom);
 
     const memberListener = roomsRef
       .doc(selectedRoom.id)
@@ -55,7 +32,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
 
           return data;
         });
-        setMembers(members);
       });
 
     return () => memberListener();
@@ -71,8 +47,23 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
       .doc(selectedRoom.id)
       //  .orderBy("createdAt", "asc")
       .onSnapshot((querySnapshot) => {
-        console.log(querySnapshot.data(), "dsds");
-        setLocalSelectedRoom(querySnapshot.data());
+        const tempRoom = querySnapshot.data();
+        setLocalSelectedRoom(tempRoom);
+
+        console.log(tempRoom);
+        console.log(tempRoom.startTimerStamp.seconds);
+
+        if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
+          // setDuration(selectedRoom.duration);
+          console.log(tempRoom.duration);
+        } else {
+          const difference = Math.ceil(
+            new Date().getTime() / 1000 - tempRoom.startTimerStamp.seconds
+          );
+          setDuration(difference);
+          console.log(difference, "Difference");
+        }
+
         if (querySnapshot.data().status === true) {
           setIsPlaying(true);
         } else {
@@ -103,9 +94,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const onStartTimer = () => {
-    console.log(selectedRoom, "jdsjdsj");
-    console.log(new Date(), "timestamp");
-
     roomsRef.doc(selectedRoom.id).update({
       startTimerStamp: new Date().getTime(),
       status: true,
@@ -123,10 +111,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   };
   const renderTime = ({ remainingTime }) => {
     if (remainingTime === 0) {
-      roomsRef.doc(selectedRoom.id).update({
-        startTimerStamp: -1,
-        status: false,
-      });
       return (
         <Flex direction="column" justify="center" align="center">
           <Text fontSize={40} fontWeight="medium" color="brand.400">
@@ -215,6 +199,10 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
           colors={[["#6269A0"], ["#ee4f4f"]]}
           onComplete={() => {
             setIsCompleted(true);
+            roomsRef.doc(selectedRoom.id).update({
+              startTimerStamp: -1,
+              status: false,
+            });
             return [false, 1000];
           }}
         >
