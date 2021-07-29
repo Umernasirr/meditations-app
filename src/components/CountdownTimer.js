@@ -5,12 +5,13 @@ import firebase from "../firebase";
 
 const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   const [members, setMembers] = useState([]);
+  const [localSelectedRoom, setLocalSelectedRoom] = useState([]);
   const [duration, setDuration] = useState(10);
   const roomsRef = firebase.firestore().collection("rooms");
   useEffect(() => {
     if (selectedRoom) {
       console.log(selectedRoom, "come");
-
+      setLocalSelectedRoom(selectedRoom);
       if (
         selectedRoom.status === false ||
         selectedRoom.startTimerStamp === -1
@@ -58,6 +59,44 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
       });
 
     return () => memberListener();
+  }, [selectedRoom]);
+
+  useEffect(() => {
+    if (!selectedRoom) {
+      return;
+    }
+    // console.log(selectedRoom);
+
+    const roomListener = roomsRef
+      .doc(selectedRoom.id)
+      //  .orderBy("createdAt", "asc")
+      .onSnapshot((querySnapshot) => {
+        console.log(querySnapshot.data(), "dsds");
+        setLocalSelectedRoom(querySnapshot.data());
+        if (querySnapshot.data().status === true) {
+          setIsPlaying(true);
+        } else {
+          setIsPlaying(false);
+        }
+
+        // const members = querySnapshot.docs.map((doc) => {
+        //   console.log(doc.data(), "rom data");
+        //   //   const firebaseData = doc.data();
+
+        //   //   const data = {
+        //   //     id: doc.id,
+        //   //     createdAt: new Date().getTime(),
+        //   //     ...firebaseData,
+        //   //   };
+
+        //   //   return data;
+        //   // });
+        //   // setMembers(members);
+        // });
+      });
+
+    // }
+    return () => roomListener();
   }, [selectedRoom]);
 
   const [key, setKey] = useState(0);
