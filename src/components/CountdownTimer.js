@@ -6,7 +6,7 @@ import firebase from "../firebase";
 const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   const [members, setMembers] = useState([]);
   const [localSelectedRoom, setLocalSelectedRoom] = useState([]);
-  const [duration, setDuration] = useState(10);
+  const [duration, setDuration] = useState(20);
   const roomsRef = firebase.firestore().collection("rooms");
   useEffect(() => {
     if (selectedRoom) {
@@ -22,6 +22,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
         const difference = Math.ceil(
           new Date().getTime() / 1000 - selectedRoom.startTimerStamp.seconds
         );
+        console.log(selectedRoom.startTimerStamp.seconds, "secccc");
         setDuration(difference);
       }
       if (selectedRoom.status === true) {
