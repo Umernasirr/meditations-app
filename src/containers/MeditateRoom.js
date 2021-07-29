@@ -35,6 +35,7 @@ const MeditationRooms = () => {
       .set({
         title: roomName,
         duration: duration,
+        status: false,
       })
       .then(() => {
         roomsRef
@@ -49,6 +50,8 @@ const MeditationRooms = () => {
               title: roomName,
               id: doc.id,
               user: currentUser,
+              status: false,
+              duration: duration,
               createdAt: new Date().getTime(),
             };
             setSelectedRoom(newRoom);

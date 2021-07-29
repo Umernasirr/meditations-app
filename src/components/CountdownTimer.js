@@ -5,7 +5,31 @@ import firebase from "../firebase";
 
 const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   const [members, setMembers] = useState([]);
+  const [duration, setDuration] = useState(10);
   const roomsRef = firebase.firestore().collection("rooms");
+  useEffect(() => {
+    if (selectedRoom) {
+      console.log(selectedRoom, "come");
+
+      if (
+        selectedRoom.status === false ||
+        selectedRoom.startTimerStamp === -1
+      ) {
+        // setDuration(selectedRoom.duration);
+        console.log(selectedRoom.duration);
+      } else {
+        const difference = Math.ceil(
+          new Date().getTime() / 1000 - selectedRoom.startTimerStamp.seconds
+        );
+        setDuration(difference);
+      }
+      if (selectedRoom.status === true) {
+        setIsPlaying(true);
+      } else {
+        setIsPlaying(false);
+      }
+    }
+  }, [selectedRoom]);
   useEffect(() => {
     setMembers([]);
 
@@ -39,8 +63,31 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   const [key, setKey] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
 
+  const onStartTimer = () => {
+    console.log(selectedRoom, "jdsjdsj");
+    console.log(new Date(), "timestamp");
+
+    roomsRef.doc(selectedRoom.id).update({
+      startTimerStamp: new Date().getTime(),
+      status: true,
+    });
+    // let doc = roomsRef.doc();
+    // roomsRef
+    // .doc(doc.id).set({
+    //   timerStartTime: new Date();
+    // })
+    // doc.set({
+    //   title: roomName,
+    //   duration: duration,
+    // });
+    setIsPlaying(true);
+  };
   const renderTime = ({ remainingTime }) => {
     if (remainingTime === 0) {
+      roomsRef.doc(selectedRoom.id).update({
+        startTimerStamp: -1,
+        status: false,
+      });
       return (
         <Flex direction="column" justify="center" align="center">
           <Text fontSize={40} fontWeight="medium" color="brand.400">
@@ -119,37 +166,41 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
           : null}
       </Flex>
       <Box my={4} />
-      <CountdownCircleTimer
-        key={key}
-        size={400}
-        isPlaying={isPlaying}
-        strokeWidth={16}
-        duration={selectedRoom?.duration ? selectedRoom.duration : 60}
-        colors={[["#6269A0"], ["#ee4f4f"]]}
-        onComplete={() => {
-          setIsCompleted(true);
-          return [false, 1000];
-        }}
-      >
-        {renderTime}
-      </CountdownCircleTimer>
-      <Box my={4} />
-      <Flex direction="row" align="center" justify="center">
-        <Button
-          width="200px"
-          height="50px"
-          borderRadius={16}
-          bg="brand.600"
-          color="gray.100"
-          _hover={{ bg: "brand.800" }}
-          disabled={isPlaying}
-          onClick={() => setIsPlaying(true)}
+      {selectedRoom && selectedRoom.duration && duration !== -1 && (
+        <CountdownCircleTimer
+          key={key}
+          size={400}
+          isPlaying={isPlaying}
+          strokeWidth={16}
+          duration={duration}
+          colors={[["#6269A0"], ["#ee4f4f"]]}
+          onComplete={() => {
+            setIsCompleted(true);
+            return [false, 1000];
+          }}
         >
-          <Text fontSize={18} fontWeight="bold">
-            Start Meditation
-          </Text>
-        </Button>
-      </Flex>
+          {renderTime}
+        </CountdownCircleTimer>
+      )}
+      <Box my={4} />
+      {selectedRoom && (
+        <Flex direction="row" align="center" justify="center">
+          <Button
+            width="200px"
+            height="50px"
+            borderRadius={16}
+            bg="brand.600"
+            color="gray.100"
+            _hover={{ bg: "brand.800" }}
+            disabled={isPlaying}
+            onClick={onStartTimer}
+          >
+            <Text fontSize={18} fontWeight="bold">
+              Start Meditation
+            </Text>
+          </Button>
+        </Flex>
+      )}
       <Box mt={2} />
       {isCompleted ? (
         <Button
