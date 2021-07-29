@@ -15,19 +15,17 @@ import { IoMdReturnRight } from "react-icons/io";
 const backgroundImg = process.env.PUBLIC_URL + "/bg_img.jpg";
 
 const MeditationRooms = () => {
-  const [selectedRoom, setSelectedRoom] = useState(undefined);
+  const [selectedRoom, setSelectedRoom] = useState([]);
   const [roomName, setRoomName] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isChatDrawerOpen, setChatDrawerOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [roomError, setRoomError] = useState("");
-  const [rooms, setRooms] = useState(undefined);
+  const [rooms, setRooms] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
   const [showJoinModal, setShowJoinModal] = useState(false);
-  const [roomsRef, setroomsRef] = useState(
-    firebase.firestore().collection("rooms")
-  );
+  const roomsRef = firebase.firestore().collection("rooms");
   // const roomsRef = firebase.firestore().collection("rooms");
   const handleRoomCreate = () => {
     let doc = roomsRef.doc();
@@ -51,35 +49,14 @@ const MeditationRooms = () => {
               user: currentUser,
               createdAt: new Date().getTime(),
             };
+
+            setRooms([...rooms, newRoom]);
             setShowModal(false);
             setSelectedRoom(newRoom);
 
             setChatDrawerOpen(true);
           });
       });
-    roomsRef.onSnapshot((snapshot) => {
-      const roomsData = [];
-      snapshot.forEach((doc) => {
-        let isMember = false;
-        const members = roomsRef
-          .doc(doc.id)
-          .collection("members")
-          .get()
-          .then((ref) => {
-            ref.forEach((reff) => {
-              if (reff.data().user.uid === currentUser.uid) {
-                isMember = true;
-              }
-            });
-          })
-          .then(() => {
-            if (isMember) {
-              roomsData.push({ ...doc.data(), id: doc.id });
-              setRooms(roomsData);
-            }
-          });
-      });
-    });
 
     setRoomName("");
   };
@@ -144,79 +121,41 @@ const MeditationRooms = () => {
     setRoomName("");
   };
 
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     const roomListener = roomsRef.onSnapshot((snapshot) => {
-  //       const roomsData = [];
-  //       snapshot.forEach((doc) => {
-  //         let isMember = false;
-  //         const members = roomsRef
-  //           .doc(doc.id)
-  //           .collection("members")
-  //           .get()
-  //           .then((ref) => {
-  //             ref.forEach((reff) => {
-  //               if (reff.data().user.uid === currentUser.uid) {
-  //                 isMember = true;
-  //               }
-  //             });
-  //           })
-  //           .then(() => {
-  //             if (isMember) {
-  //               roomsData.push({ ...doc.data(), id: doc.id });
-  //               setRooms(roomsData);
-  //             }
-  //           });
-  //       });
-  //     });
-  //     return () => roomListener();
-  //   }
-  // }, [currentUser]);
-
   useEffect(() => {
-    setRooms([]);
-    const roomsData = [];
+    const getRooms = async () => {
+      setRooms([]);
+      const tempRooms = [];
+      const firebaseData = await roomsRef.get();
 
-    if (!currentUser) {
-      return;
-    }
-    const roomListener = roomsRef.onSnapshot((querySnapshot) => {
-      const rooms = querySnapshot.docs.forEach((doc) => {
-        roomsRef
-          .doc(doc.id)
+      firebaseData.docs.map(async (room) => {
+        const memberCollection = await roomsRef
+          .doc(room.id)
           .collection("members")
-          .get()
-          .then((ref) => {
-            const memberInRoom = ref.docs.filter((member) => {
-              return member.data().user.uid === currentUser?.uid;
-            });
+          .get();
 
-            if (memberInRoom) {
-              roomsData.push({ ...doc.data(), id: doc.id });
-            }
+        const myRooms = memberCollection.docs.filter(
+          (memberData) => memberData.data().user.uid === currentUser.uid
+        );
 
-            console.log(roomsData);
-            // setRooms(tempRooms);
+        console.log(room.id);
+        if (myRooms.length > 0) {
+          const roomData = {
+            id: room.id,
+            ...room.data(),
+            ...myRooms[0]?.data(),
+          };
 
-            // ref.forEach((reff) => {
-            //   if (reff.data().user.uid === currentUser.uid) {
-            //     isMember = true;
-            //   }
-            // });
-          });
-
-        setRooms(roomsData);
-
-        // .then(() => {
-        //   if (isMember) {
-        //     roomsData.push({ ...doc.data(), id: doc.id });
-        //     setRooms(roomsData);
-        //   }
-        // });
+          tempRooms.push(roomData);
+        }
+        //
       });
-    });
 
-    return () => roomListener();
+      setRooms(tempRooms);
+    };
+
+    if (currentUser) {
+      getRooms();
+    }
   }, [currentUser]);
 
   return (
@@ -237,9 +176,11 @@ const MeditationRooms = () => {
       <MyDrawer
         isDrawerOpen={isDrawerOpen}
         setDrawerOpen={setDrawerOpen}
-        rooms={rooms}
         setSelectedRoom={setSelectedRoom}
         setChatDrawerOpen={setChatDrawerOpen}
+        currentUser={currentUser}
+        rooms={rooms}
+        setRooms={setRooms}
       />
 
       <ChatDrawer
@@ -248,7 +189,6 @@ const MeditationRooms = () => {
         selectedRoom={selectedRoom}
         setSelectedRoom={setSelectedRoom}
       />
-
       {/* Join Room Model */}
       <JoinRoomModal
         showJoinModal={showJoinModal}

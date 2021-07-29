@@ -6,13 +6,13 @@ import firebase from "../firebase";
 const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   const [members, setMembers] = useState([]);
   const roomsRef = firebase.firestore().collection("rooms");
-
   useEffect(() => {
     setMembers([]);
 
     if (!selectedRoom) {
       return;
     }
+    console.log(selectedRoom);
 
     const memberListener = roomsRef
       .doc(selectedRoom.id)
@@ -36,7 +36,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
     return () => memberListener();
   }, [selectedRoom]);
 
-  const [duration, setDuration] = useState(20);
   const [key, setKey] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -78,7 +77,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
               const user = member.user;
               let names;
               if (user.displayName) {
-                names = user.displayName.split(" ");
+                names = user.displayName.toUpperCase().split(" ");
               } else {
                 names = ["Unknown"];
               }
@@ -125,7 +124,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
         size={400}
         isPlaying={isPlaying}
         strokeWidth={16}
-        duration={duration}
+        duration={selectedRoom.duration ? selectedRoom.duration : 60}
         colors={[["#6269A0"], ["#ee4f4f"]]}
         onComplete={() => {
           setIsCompleted(true);
