@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Image, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, Tooltip } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import firebase from "../firebase";
@@ -105,9 +105,9 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
                       <Flex justify="center" align="center">
                         {names.map((name, index) =>
                           index === names.length - 1 ? (
-                            <Text>{`${name[0]}.`}</Text>
+                            <Text fontWeight="bold">{`${name[0]}.`}</Text>
                           ) : (
-                            <Text>{`${name[0]}`}</Text>
+                            <Text fontWeight="bold">{`${name[0]}`}</Text>
                           )
                         )}
                       </Flex>

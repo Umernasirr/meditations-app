@@ -4,33 +4,22 @@ import {
   Text,
   Image,
   Box,
-  Icon,
   Input,
   InputGroup,
   InputLeftElement,
   Button,
   Spacer,
-  IconButton,
-  Tooltip,
   useClipboard,
 } from "@chakra-ui/react";
-import {
-  AiOutlineCloseCircle,
-  AiOutlineMessage,
-  AiOutlineArrowRight,
-  BiGroup,
-} from "react-icons/all";
+import { AiOutlineMessage } from "react-icons/all";
 
 import firebase from "../firebase";
 import { useSelector } from "react-redux";
-
-const groupImg = process.env.PUBLIC_URL + "/group_icon.png";
 
 const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
   const [messages, setMessages] = useState([]);
   const [messageTxt, setMessageTxt] = useState("");
   const { currentUser } = useSelector((state) => state.user);
-  const [value, setValue] = React.useState("Hello world");
   const { hasCopied, onCopy } = useClipboard(
     selectedRoom.id ? selectedRoom.id : ""
   );
@@ -70,7 +59,6 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
             createdAt: new Date().getTime(),
             ...firebaseData,
           };
-
           return data;
         });
 
@@ -79,12 +67,10 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
       });
 
     return () => messagesListener();
-  }, []);
+  }, [selectedRoom]);
 
   return (
     <Flex direction="column" h="full">
-      <Box my={4} />
-
       <Flex px={0} direction="column">
         {messages.length > 0 ? (
           messages.map((msg, index) => (
@@ -93,7 +79,8 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
               justify={
                 msg.user.uid === currentUser?.uid ? "flex-end" : "flex-start"
               }
-              my={2}
+              my={1}
+              align="center"
             >
               {msg.user.uid !== currentUser?.uid && (
                 <Flex direction="column" justify="center" align="center">
@@ -112,17 +99,16 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
                 </Flex>
               )}
               <Box mx={1} />
-              <Text
-                p={3}
-                px={4}
+              <Flex
                 borderRadius={24}
                 bg={
                   msg.user.uid === currentUser?.uid ? "brand.100" : "brand.400"
                 }
                 color="blackAlpha.800"
+                p={3}
               >
-                {msg.messageTxt}
-              </Text>
+                <Text fontSize={14}>{msg.messageTxt}</Text>
+              </Flex>
               <Box mx={1} />
 
               {msg.user.uid === currentUser?.uid && (
@@ -148,7 +134,7 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
         ) : (
           <Flex w="full" justify="center" align="center" direction="column">
             <Text textAlign="center" fontWeight="medium" fontSize={18} mx={8}>
-              Invite More by Copying the Room Code Below:
+              Invite Friends by Copying the Room Code:
             </Text>
 
             <Box mt={4} />
@@ -165,7 +151,7 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
                 color="white"
                 _hover={{ bg: "brand.800" }}
                 onClick={onCopy}
-                ml={2}
+                ml={1}
               >
                 {hasCopied ? "Copied" : "Copy"}
               </Button>
@@ -175,9 +161,10 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
       </Flex>
       <Spacer />
       <Box py={2} />
-      <InputGroup px={2}>
+      <InputGroup>
         <InputLeftElement pl={2} children={<AiOutlineMessage />} />
         <Input
+          fontSize={12}
           value={messageTxt}
           onChange={(e) => setMessageTxt(e.target.value)}
           placeholder="Write a New Message"

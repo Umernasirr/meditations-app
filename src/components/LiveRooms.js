@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 
-import { Flex, Box, Text, Button, IconButton, Tooltip } from "@chakra-ui/react";
-import { AiOutlineAlignRight, AiOutlineArrowRight } from "react-icons/ai";
+import { Flex, Text, IconButton, Tooltip } from "@chakra-ui/react";
+import { AiOutlineArrowRight } from "react-icons/ai";
 
 const ROOMS = [1, 2, 3, 4, 5];
 

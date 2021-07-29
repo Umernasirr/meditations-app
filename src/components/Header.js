@@ -1,19 +1,14 @@
-import { Flex, Text, Box, Button, Image, IconButton } from "@chakra-ui/react";
-import React, { Fragment, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Flex, Text, Box, Button } from "@chakra-ui/react";
+import React, { Fragment } from "react";
+import { useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import firebase from "../firebase.js";
 import { clearUser } from "../redux/user.js";
-import { AiOutlineMenu } from "react-icons/ai";
-
-const logoImg = process.env.PUBLIC_URL + "/logo.png";
 
 const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal, hasBg }) => {
-  const [code, setCode] = useState("");
   const history = useHistory();
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
-  const roomsRef = firebase.firestore().collection("rooms");
 
   const handleJoinRoom = () => {
     if (currentUser) {
@@ -26,10 +21,10 @@ const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal, hasBg }) => {
     firebase
       .auth()
       .signOut()
-      .then(function() {
+      .then(function () {
         dispatch(clearUser);
       })
-      .catch(function(error) {});
+      .catch(function (error) {});
   };
   return (
     <Flex
@@ -42,17 +37,6 @@ const Header = ({ setShowJoinModal, setDrawerOpen, setShowModal, hasBg }) => {
       py={8}
     >
       <Flex align="center" px={12}>
-        {!hasBg && (
-          <IconButton
-            variant="ghost"
-            color="brand.100"
-            _hover={{ backgroundColor: "transparent", color: "brand.200 " }}
-            fontSize={22}
-            onClick={() => setDrawerOpen(true)}
-            _focus={{ outline: "none" }}
-            icon={<AiOutlineMenu />}
-          />
-        )}
         <Box mx={2} />
         <Text
           fontSize="md"

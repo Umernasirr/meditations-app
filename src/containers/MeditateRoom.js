@@ -5,12 +5,11 @@ import Header from "../components/Header";
 import { AiOutlineMessage } from "react-icons/ai";
 import firebase from "../firebase";
 import { useSelector } from "react-redux";
-import MyDrawer from "../components/MyDrawer";
-import ChatDrawer from "../components/ChatDrawer";
+import ChatListPopup from "../components/ChatListPopup";
 import CountdownTimer from "../components/CountdownTimer";
 import CreateNewRoomModal from "../components/CreateNewRoomModal";
 import JoinRoomModal from "../components/JoinRoomModal";
-import { IoMdReturnRight } from "react-icons/io";
+import ChatMessagesPopup from "../components/ChatMessagesPopup";
 
 const backgroundImg = process.env.PUBLIC_URL + "/bg_img.jpg";
 
@@ -54,39 +53,16 @@ const MeditationRooms = () => {
             };
             setSelectedRoom(newRoom);
 
+            setRooms([...rooms, newRoom]);
             setChatDrawerOpen(true);
-            setShowJoinModal(false);
+            setShowModal(false);
           });
       });
-    // roomsRef.onSnapshot((snapshot) => {
-    //   const roomsData = [];
-    //   snapshot.forEach((doc) => {
-    //     let isMember = false;
-    //     const members = roomsRef
-    //       .doc(doc.id)
-    //       .collection("members")
-    //       .get()
-    //       .then((ref) => {
-    //         ref.forEach((reff) => {
-    //           if (reff.data().user.uid === currentUser.uid) {
-    //             isMember = true;
-    //           }
-    //         });
-    //       })
-    //       .then(() => {
-    //         if (isMember) {
-    //           roomsData.push({ ...doc.data(), id: doc.id });
-    //           setRooms(roomsData);
-    //         }
-    //       });
-    //   });
-    // });
-    // setRoomName("");
   };
 
   const handleJoinRoom = () => {
     let isMember = false;
-    const data = roomsRef
+    roomsRef
       .doc(roomName)
       .get()
       .then((doc) => {
@@ -109,13 +85,10 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef
-                  .doc(roomName)
-                  .collection("members")
-                  .add({
-                    createdAt: new Date().getTime(),
-                    user: currentUser,
-                  });
+                roomsRef.doc(roomName).collection("members").add({
+                  createdAt: new Date().getTime(),
+                  user: currentUser,
+                });
 
                 roomsRef.onSnapshot((snapshot) => {
                   const roomsData = [];
@@ -199,22 +172,6 @@ const MeditationRooms = () => {
         setShowModal={setShowModal}
       />
 
-      <MyDrawer
-        isDrawerOpen={isDrawerOpen}
-        setDrawerOpen={setDrawerOpen}
-        setSelectedRoom={setSelectedRoom}
-        setChatDrawerOpen={setChatDrawerOpen}
-        currentUser={currentUser}
-        rooms={rooms}
-        setRooms={setRooms}
-      />
-
-      <ChatDrawer
-        isDrawerOpen={isChatDrawerOpen}
-        setDrawerOpen={setChatDrawerOpen}
-        selectedRoom={selectedRoom}
-        setSelectedRoom={setSelectedRoom}
-      />
       {/* Join Room Model */}
       <JoinRoomModal
         showJoinModal={showJoinModal}
@@ -233,7 +190,7 @@ const MeditationRooms = () => {
         duration={duration}
         setDuration={setDuration}
       />
-      <Flex mx={24} direction="column" h="full">
+      <Flex mx={8} direction="column" h="full">
         <Flex h="full" w="full" align="center" justify="center">
           <CountdownTimer
             isPlaying={isPlaying}
@@ -243,21 +200,42 @@ const MeditationRooms = () => {
         </Flex>
 
         <Spacer />
-        {selectedRoom && (
-          <Flex height="40px" w="90vw" justify="flex-end" align="center">
+
+        <Flex
+          height="40px"
+          w="full"
+          justify="space-between"
+          align="center"
+          px={20}
+        >
+          <Box>
+            <ChatListPopup
+              moduleHeight="480px"
+              isDrawerOpen={isDrawerOpen}
+              setDrawerOpen={setDrawerOpen}
+              setSelectedRoom={setSelectedRoom}
+              setChatDrawerOpen={setChatDrawerOpen}
+              currentUser={currentUser}
+              rooms={rooms}
+              setRooms={setRooms}
+              placement={"top"}
+              paddingX={8}
+              hasBorder={false}
+              showSearch={true}
+            />
+          </Box>
+
+          {selectedRoom && (
             <Box>
-              <IconButton
-                bg="brand.600"
-                color="white"
-                _hover={{ bg: "brand.800" }}
-                onClick={() => setChatDrawerOpen(true)}
-                _focus={{ outline: "none" }}
-                size="lg"
-                icon={<AiOutlineMessage size="24" />}
+              <ChatMessagesPopup
+                isDrawerOpen={isChatDrawerOpen}
+                setDrawerOpen={setChatDrawerOpen}
+                selectedRoom={selectedRoom}
+                setSelectedRoom={setSelectedRoom}
               />
             </Box>
-          </Flex>
-        )}
+          )}
+        </Flex>
         <Box mt={8} />
       </Flex>
     </Flex>
