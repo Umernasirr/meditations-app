@@ -16,6 +16,7 @@ const backgroundImg = process.env.PUBLIC_URL + "/bg_img.jpg";
 const MeditationRooms = () => {
   const [selectedRoom, setSelectedRoom] = useState(undefined);
   const [roomName, setRoomName] = useState("");
+  const [duration, setDuration] = useState(10);
   const [showModal, setShowModal] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isChatDrawerOpen, setChatDrawerOpen] = useState(false);
@@ -29,13 +30,13 @@ const MeditationRooms = () => {
   );
   // const roomsRef = firebase.firestore().collection("rooms");
   const handleRoomCreate = () => {
+    // console.log(duration, "duration");
     let doc = roomsRef.doc();
-
-    setShowModal(false);
-
+    // setShowModal(false);
     doc
       .set({
         title: roomName,
+        duration: duration,
       })
       .then(() => {
         roomsRef
@@ -52,36 +53,35 @@ const MeditationRooms = () => {
               user: currentUser,
               createdAt: new Date().getTime(),
             };
-
             setSelectedRoom(newRoom);
             setChatDrawerOpen(true);
+            setShowJoinModal(false);
           });
       });
-    roomsRef.onSnapshot((snapshot) => {
-      const roomsData = [];
-      snapshot.forEach((doc) => {
-        let isMember = false;
-        const members = roomsRef
-          .doc(doc.id)
-          .collection("members")
-          .get()
-          .then((ref) => {
-            ref.forEach((reff) => {
-              if (reff.data().user.uid === currentUser.uid) {
-                isMember = true;
-              }
-            });
-          })
-          .then(() => {
-            if (isMember) {
-              roomsData.push({ ...doc.data(), id: doc.id });
-              setRooms(roomsData);
-            }
-          });
-      });
-    });
-
-    setRoomName("");
+    // roomsRef.onSnapshot((snapshot) => {
+    //   const roomsData = [];
+    //   snapshot.forEach((doc) => {
+    //     let isMember = false;
+    //     const members = roomsRef
+    //       .doc(doc.id)
+    //       .collection("members")
+    //       .get()
+    //       .then((ref) => {
+    //         ref.forEach((reff) => {
+    //           if (reff.data().user.uid === currentUser.uid) {
+    //             isMember = true;
+    //           }
+    //         });
+    //       })
+    //       .then(() => {
+    //         if (isMember) {
+    //           roomsData.push({ ...doc.data(), id: doc.id });
+    //           setRooms(roomsData);
+    //         }
+    //       });
+    //   });
+    // });
+    // setRoomName("");
   };
 
   const handleJoinRoom = () => {
@@ -109,10 +109,13 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef.doc(roomName).collection("members").add({
-                  createdAt: new Date().getTime(),
-                  user: currentUser,
-                });
+                roomsRef
+                  .doc(roomName)
+                  .collection("members")
+                  .add({
+                    createdAt: new Date().getTime(),
+                    user: currentUser,
+                  });
 
                 roomsRef.onSnapshot((snapshot) => {
                   const roomsData = [];
@@ -217,6 +220,8 @@ const MeditationRooms = () => {
         roomName={roomName}
         setRoomName={setRoomName}
         handleRoomCreate={handleRoomCreate}
+        duration={duration}
+        setDuration={setDuration}
       />
       <Flex mx={24} direction="column" h="full">
         <Flex h="full" w="full" align="center" justify="center">

@@ -1,6 +1,15 @@
 import { Button } from "@chakra-ui/button";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import {
+  NumberInput,
+  NumberInputField,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  NumberInputStepper,
+  Text,
+  Flex,
+} from "@chakra-ui/react";
+import {
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -17,6 +26,8 @@ const CreateNewRoomModal = ({
   roomName,
   setRoomName,
   handleRoomCreate,
+  duration,
+  setDuration,
 }) => {
   return (
     <Modal size="xl" isOpen={showModal} onClose={() => setShowModal(false)}>
@@ -37,6 +48,31 @@ const CreateNewRoomModal = ({
               _focus={{ outline: "none" }}
               _hover={{ borderColor: "brand.800" }}
             />
+          </InputGroup>
+          <InputGroup mt={3}>
+            <Flex align="center" w="full">
+              <Text fontWeight="bold" pr={2}>
+                Duration(sec)
+              </Text>
+              <NumberInput
+                borderWidth={1}
+                borderColor="gray.400"
+                borderRadius="8"
+                value={duration}
+                onChange={(text) => setDuration(text)}
+                defaultValue={10}
+                w="100%"
+                min={0}
+                max={200}
+                step={5}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </Flex>
           </InputGroup>
         </ModalBody>
         <ModalFooter>
