@@ -56,7 +56,6 @@ const MyDrawer = ({
 
     setTimeout(() => {
       setSearchTxt("");
-      console.log("HEy");
     }, 5000);
   }, [currentUser, rooms]);
 

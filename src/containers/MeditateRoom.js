@@ -15,7 +15,7 @@ import { IoMdReturnRight } from "react-icons/io";
 const backgroundImg = process.env.PUBLIC_URL + "/bg_img.jpg";
 
 const MeditationRooms = () => {
-  const [selectedRoom, setSelectedRoom] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState(undefined);
   const [roomName, setRoomName] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);

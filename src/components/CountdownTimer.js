@@ -124,7 +124,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
         size={400}
         isPlaying={isPlaying}
         strokeWidth={16}
-        duration={selectedRoom.duration ? selectedRoom.duration : 60}
+        duration={selectedRoom?.duration ? selectedRoom.duration : 60}
         colors={[["#6269A0"], ["#ee4f4f"]]}
         onComplete={() => {
           setIsCompleted(true);
