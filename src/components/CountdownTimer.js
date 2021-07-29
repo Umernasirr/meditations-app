@@ -8,7 +8,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   const [localSelectedRoom, setLocalSelectedRoom] = useState([]);
   const [duration, setDuration] = useState(20);
   const roomsRef = firebase.firestore().collection("rooms");
-
   useEffect(() => {
     setMembers([]);
 
