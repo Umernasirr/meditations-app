@@ -270,7 +270,6 @@ const MeditationRooms = () => {
             members={members}
           />
         </Flex>
-
         <Spacer />
 
         <Flex
