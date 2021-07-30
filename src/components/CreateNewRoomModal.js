@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "@chakra-ui/button";
 import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
 import {
@@ -9,6 +10,7 @@ import {
   Text,
   Flex,
   Spinner,
+  Switch,
 } from "@chakra-ui/react";
 import {
   Modal,
@@ -18,7 +20,6 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/modal";
-import React from "react";
 import { AiOutlineMessage } from "react-icons/ai";
 
 const CreateNewRoomModal = ({
@@ -31,10 +32,11 @@ const CreateNewRoomModal = ({
   setDuration,
   loadingCreateRoom,
 }) => {
+  const [isChecked, setIsChecked] = useState(false);
   return (
     <Modal size="xl" isOpen={showModal} onClose={() => setShowModal(false)}>
       <ModalContent>
-        <ModalHeader>New Room</ModalHeader>
+        <ModalHeader>Create a New Room</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <InputGroup>
@@ -76,7 +78,19 @@ const CreateNewRoomModal = ({
               </NumberInput>
             </Flex>
           </InputGroup>
+          <Flex mt={3} align="center" justify="flex-end">
+            <Text px={2} fontWeight="medium">
+              Make Room Global?
+            </Text>
+            <Switch
+              isChecked={isChecked}
+              onChange={() => setIsChecked(!isChecked)}
+              color="brand.600"
+              size="lg"
+            />
+          </Flex>
         </ModalBody>
+
         <ModalFooter>
           {loadingCreateRoom && (
             <Spinner
@@ -87,6 +101,7 @@ const CreateNewRoomModal = ({
               size="md"
             />
           )}
+
           <Button colorScheme="red" mx={3} onClick={() => setShowModal(false)}>
             Cancel
           </Button>
@@ -94,7 +109,7 @@ const CreateNewRoomModal = ({
             bg="brand.600"
             color="gray.100"
             _hover={{ backgroundColor: "brand.800" }}
-            onClick={() => handleRoomCreate()}
+            onClick={() => handleRoomCreate(isChecked)}
           >
             Create New Room
           </Button>

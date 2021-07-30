@@ -7,6 +7,7 @@ import {
   Flex,
   Box,
   IconButton,
+  Tooltip,
 } from "@chakra-ui/react";
 
 import React from "react";
@@ -44,8 +45,9 @@ const ChatMessagesPopup = ({
               w="full"
               color="brand.600"
               boxShadow="sm"
-              justify="center"
+              justify="space-between"
               align="center"
+              px={2}
               pb={2}
             >
               <Text>
@@ -53,13 +55,14 @@ const ChatMessagesPopup = ({
               </Text>
               {/* {icon} */}
               <IconButton
+                ml={2}
                 bg="brand.600"
                 color="white"
                 _hover={{ bg: "brand.800" }}
                 onClick={() => setShowLeaveGroupModal(!showLeaveGroupModal)}
                 _focus={{ outline: "none" }}
                 size="md"
-                borderRadius={16}
+                borderRadius={32}
                 icon={<AiOutlineClose size="18" />}
               />
             </Flex>
