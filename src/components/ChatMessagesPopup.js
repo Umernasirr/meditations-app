@@ -64,7 +64,7 @@ const ChatMessagesPopup = ({
               />
             </Flex>
             <Box py={2} />
-
+            {/*  */}
             <Flex
               direction="column"
               overflowY
