@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Flex, Box, Text, Grid, Button, Image, Spacer } from "@chakra-ui/react";
 import Header from "../components/Header";
 import { useHistory } from "react-router";
-import LiveRooms from "../components/LiveRooms";
 import ChatListPopup from "../components/ChatListPopup";
 import { useSelector } from "react-redux";
 import firebase from "../firebase";

@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverBody,
   IconButton,
+  Spinner,
 } from "@chakra-ui/react";
 import { AiOutlineGroup } from "react-icons/ai";
 import { Fragment } from "react";
@@ -23,7 +24,6 @@ const ChatListPopup = ({
   setChatDrawerOpen,
   currentUser,
   rooms,
-  setRooms,
   moduleHeight,
   paddingX,
   placement,
@@ -32,7 +32,7 @@ const ChatListPopup = ({
 }) => {
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [searchTxt, setSearchTxt] = useState(" ");
-
+  const [loading, setLoading] = useState(false);
   const handleChangeSearch = (e) => {
     const query = e.target.value;
     setSearchTxt(query);
@@ -50,11 +50,13 @@ const ChatListPopup = ({
   };
 
   useEffect(() => {
+    setLoading(true);
     setFilteredRooms([]);
     setFilteredRooms(rooms);
 
     setTimeout(() => {
       setSearchTxt("");
+      setLoading(false);
     }, 6000);
   }, [currentUser, rooms]);
 
@@ -159,6 +161,16 @@ const ChatListPopup = ({
                     </Box>
                   </Flex>
                 ))
+              ) : loading ? (
+                <Flex w="full" my={2} align="center" justify="center">
+                  <Spinner
+                    thickness="4px"
+                    speed="0.65s"
+                    emptyColor="gray.200"
+                    color="brand.800"
+                    size="xl"
+                  />
+                </Flex>
               ) : (
                 <Text my={2} color="gray.600">
                   No Rooms Found...

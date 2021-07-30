@@ -13,7 +13,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
     if (!selectedRoom) {
       return;
     }
-    // console.log(selectedRoom);
 
     const roomListener = roomsRef
       .doc(selectedRoom.id)
@@ -22,9 +21,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
         const tempRoom = querySnapshot.data();
         setLocalSelectedRoom(tempRoom);
         if (tempRoom) {
-          console.log(tempRoom);
-          console.log(tempRoom.startTimerStamp?.seconds);
-
           if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
             // setDuration(selectedRoom.duration);
           } else {
@@ -32,7 +28,6 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
               new Date().getTime() / 1000 - tempRoom.startTimerStamp?.seconds
             );
             setDuration(difference);
-            console.log(difference, "Difference");
           }
           if (querySnapshot.data().status === true) {
             setIsPlaying(true);
@@ -121,12 +116,11 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
                       }}
                     >
                       <Flex justify="center" align="center">
-                        {names.map((name, index) =>
-                          index === names.length - 1 ? (
-                            <Text fontWeight="bold">{`${name[0]}.`}</Text>
-                          ) : (
-                            <Text fontWeight="bold">{`${name[0]}`}</Text>
-                          )
+                        {names.map(
+                          (name, index) =>
+                            name && (
+                              <Text fontWeight="bold">{`${name[0]}.`}</Text>
+                            )
                         )}
                       </Flex>
                     </Box>

@@ -8,6 +8,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/modal";
+import { Spinner } from "@chakra-ui/spinner";
 import React from "react";
 import { AiOutlineMessage } from "react-icons/ai";
 
@@ -17,6 +18,7 @@ const JoinRoomModal = ({
   roomName,
   setRoomName,
   handleJoinRoom,
+  loadingJoinRoom,
 }) => {
   return (
     <Modal
@@ -45,9 +47,19 @@ const JoinRoomModal = ({
         </ModalBody>
 
         <ModalFooter>
+          {loadingJoinRoom && (
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="md"
+            />
+          )}
+
           <Button
             colorScheme="red"
-            mr={3}
+            mx={3}
             onClick={() => setShowJoinModal(false)}
           >
             Cancel

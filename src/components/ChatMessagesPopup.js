@@ -54,13 +54,13 @@ const ChatMessagesPopup = ({
               {/* {icon} */}
               <IconButton
                 bg="brand.600"
-                width="80px"
                 color="white"
                 _hover={{ bg: "brand.800" }}
                 onClick={() => setShowLeaveGroupModal(!showLeaveGroupModal)}
                 _focus={{ outline: "none" }}
-                size="lg"
-                icon={<AiOutlineClose size="24" />}
+                size="md"
+                borderRadius={16}
+                icon={<AiOutlineClose size="18" />}
               />
             </Flex>
             <Box py={2} />
@@ -79,7 +79,6 @@ const ChatMessagesPopup = ({
                 },
                 "&::-webkit-scrollbar-thumb": {
                   backgroundColor: "#6269A0",
-                  borderRadius: "16px",
                 },
               }}
             >
