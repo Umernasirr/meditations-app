@@ -24,6 +24,7 @@ const LeaveGroupModal = ({
   handleLeaveRoom,
   showLeaveGroupModal,
   setShowLeaveGroupModal,
+  isAdmin,
 }) => {
   return (
     <Modal
@@ -35,7 +36,11 @@ const LeaveGroupModal = ({
         <ModalHeader>Exit Room</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Text>Are you sure you want to exit this room?</Text>
+          <Text>
+            {isAdmin
+              ? "Exiting this room will delete the room since you are the admin. Are you sure you want to proceed?"
+              : "Are you sure you want to exit this room?"}
+          </Text>
         </ModalBody>
         <ModalFooter>
           <Button
@@ -59,7 +64,7 @@ const LeaveGroupModal = ({
             _hover={{ backgroundColor: "brand.800" }}
             onClick={() => handleLeaveRoom()}
           >
-            Exit Room
+            {isAdmin ? "Exit & Delete Room" : "Exit Room"}
           </Button>
         </ModalFooter>
       </ModalContent>

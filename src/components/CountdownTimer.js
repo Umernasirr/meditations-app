@@ -21,24 +21,24 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
       .onSnapshot((querySnapshot) => {
         const tempRoom = querySnapshot.data();
         setLocalSelectedRoom(tempRoom);
+        if (tempRoom) {
+          console.log(tempRoom);
+          console.log(tempRoom.startTimerStamp?.seconds);
 
-        console.log(tempRoom);
-        console.log(tempRoom.startTimerStamp?.seconds);
-
-        if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
-          // setDuration(selectedRoom.duration);
-        } else {
-          const difference = Math.ceil(
-            new Date().getTime() / 1000 - tempRoom.startTimerStamp?.seconds
-          );
-          setDuration(difference);
-          console.log(difference, "Difference");
-        }
-
-        if (querySnapshot.data().status === true) {
-          setIsPlaying(true);
-        } else {
-          setIsPlaying(false);
+          if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
+            // setDuration(selectedRoom.duration);
+          } else {
+            const difference = Math.ceil(
+              new Date().getTime() / 1000 - tempRoom.startTimerStamp?.seconds
+            );
+            setDuration(difference);
+            console.log(difference, "Difference");
+          }
+          if (querySnapshot.data().status === true) {
+            setIsPlaying(true);
+          } else {
+            setIsPlaying(false);
+          }
         }
       });
 

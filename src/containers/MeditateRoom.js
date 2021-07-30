@@ -28,12 +28,44 @@ const MeditationRooms = () => {
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showLeaveGroupModal, setShowLeaveGroupModal] = useState(false);
   const [members, setMembers] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const roomsRef = firebase.firestore().collection("rooms");
 
   // const roomsRef = firebase.firestore().collection("rooms");
-
+  console.log(selectedRoom, "select");
   const handleLeaveRoom = () => {
+    let isAdmin = currentUser.uid === selectedRoom.user.uid;
     console.log("Dsds", selectedRoom);
+    console.log(currentUser.uid, "dsd");
+    console.log(selectedRoom.user.uid, "room");
+
+    roomsRef
+      .doc(selectedRoom.id)
+      .collection("members")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // console.log(doc.data());
+
+          if (currentUser.uid === doc.data().user.uid) {
+            console.log(doc.id, "here");
+            roomsRef
+              .doc(selectedRoom.id)
+              .delete()
+              .then(() => {
+                setSelectedRoom(undefined);
+                setShowLeaveGroupModal(false);
+              });
+            if (isAdmin) {
+            } else {
+              doc.ref.delete().then(() => {
+                setSelectedRoom(undefined);
+                setShowLeaveGroupModal(false);
+              });
+            }
+          }
+        });
+      });
   };
 
   useEffect(() => {
@@ -42,6 +74,11 @@ const MeditationRooms = () => {
     if (!selectedRoom) {
       return;
     }
+    if (!currentUser) {
+      return;
+    }
+
+    setIsAdmin(currentUser.uid === selectedRoom.user.uid);
 
     const memberListener = roomsRef
       .doc(selectedRoom.id)
@@ -64,7 +101,7 @@ const MeditationRooms = () => {
       });
 
     return () => memberListener();
-  }, [selectedRoom]);
+  }, [selectedRoom, currentUser]);
   const handleRoomCreate = () => {
     // console.log(duration, "duration");
     let doc = roomsRef.doc();
@@ -229,6 +266,7 @@ const MeditationRooms = () => {
         showLeaveGroupModal={showLeaveGroupModal}
         setShowLeaveGroupModal={setShowLeaveGroupModal}
         handleLeaveRoom={handleLeaveRoom}
+        isAdmin={isAdmin}
       />
       {/* Create New Room Modal */}
       <CreateNewRoomModal
