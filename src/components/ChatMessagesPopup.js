@@ -65,6 +65,8 @@ const ChatMessagesPopup = ({
                 borderRadius={32}
                 icon={<AiOutlineClose size="18" />}
               />
+
+              {/*  */}
             </Flex>
             <Box py={2} />
 
