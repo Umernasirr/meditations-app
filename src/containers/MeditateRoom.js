@@ -10,6 +10,7 @@ import CountdownTimer from "../components/CountdownTimer";
 import CreateNewRoomModal from "../components/CreateNewRoomModal";
 import JoinRoomModal from "../components/JoinRoomModal";
 import ChatMessagesPopup from "../components/ChatMessagesPopup";
+import LeaveGroupModal from "../components/LeaveGroupModal";
 
 const backgroundImg = process.env.PUBLIC_URL + "/bg_img.jpg";
 
@@ -25,8 +26,82 @@ const MeditationRooms = () => {
   const [rooms, setRooms] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showLeaveGroupModal, setShowLeaveGroupModal] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const roomsRef = firebase.firestore().collection("rooms");
+
   // const roomsRef = firebase.firestore().collection("rooms");
+  console.log(selectedRoom, "select");
+  const handleLeaveRoom = () => {
+    let isAdmin = currentUser.uid === selectedRoom.user.uid;
+    console.log("Dsds", selectedRoom);
+    console.log(currentUser.uid, "dsd");
+    console.log(selectedRoom.user.uid, "room");
+
+    roomsRef
+      .doc(selectedRoom.id)
+      .collection("members")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // console.log(doc.data());
+
+          if (currentUser.uid === doc.data().user.uid) {
+            console.log(doc.id, "here");
+            roomsRef
+              .doc(selectedRoom.id)
+              .delete()
+              .then(() => {
+                setSelectedRoom(undefined);
+                setShowLeaveGroupModal(false);
+              });
+            if (isAdmin) {
+            } else {
+              doc.ref.delete().then(() => {
+                setSelectedRoom(undefined);
+                setShowLeaveGroupModal(false);
+              });
+            }
+          }
+        });
+      });
+  };
+
+  useEffect(() => {
+    setMembers([]);
+
+    if (!selectedRoom) {
+      return;
+    }
+    if (!currentUser) {
+      return;
+    }
+
+    setIsAdmin(currentUser.uid === selectedRoom.user.uid);
+
+    const memberListener = roomsRef
+      .doc(selectedRoom.id)
+      .collection("members")
+      //  .orderBy("createdAt", "asc")
+      .onSnapshot((querySnapshot) => {
+        const members = querySnapshot.docs.map((doc) => {
+          const firebaseData = doc.data();
+
+          const data = {
+            id: doc.id,
+            createdAt: new Date().getTime(),
+            ...firebaseData,
+          };
+
+          return data;
+        });
+
+        setMembers(members);
+      });
+
+    return () => memberListener();
+  }, [selectedRoom, currentUser]);
   const handleRoomCreate = () => {
     // console.log(duration, "duration");
     let doc = roomsRef.doc();
@@ -88,10 +163,13 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef.doc(roomName).collection("members").add({
-                  createdAt: new Date().getTime(),
-                  user: currentUser,
-                });
+                roomsRef
+                  .doc(roomName)
+                  .collection("members")
+                  .add({
+                    createdAt: new Date().getTime(),
+                    user: currentUser,
+                  });
 
                 roomsRef.onSnapshot((snapshot) => {
                   const roomsData = [];
@@ -183,6 +261,13 @@ const MeditationRooms = () => {
         setRoomName={setRoomName}
         handleJoinRoom={handleJoinRoom}
       />
+
+      <LeaveGroupModal
+        showLeaveGroupModal={showLeaveGroupModal}
+        setShowLeaveGroupModal={setShowLeaveGroupModal}
+        handleLeaveRoom={handleLeaveRoom}
+        isAdmin={isAdmin}
+      />
       {/* Create New Room Modal */}
       <CreateNewRoomModal
         showModal={showModal}
@@ -199,6 +284,7 @@ const MeditationRooms = () => {
             isPlaying={isPlaying}
             setIsPlaying={setIsPlaying}
             selectedRoom={selectedRoom}
+            members={members}
           />
         </Flex>
 
@@ -235,6 +321,8 @@ const MeditationRooms = () => {
                 setDrawerOpen={setChatDrawerOpen}
                 selectedRoom={selectedRoom}
                 setSelectedRoom={setSelectedRoom}
+                showLeaveGroupModal={showLeaveGroupModal}
+                setShowLeaveGroupModal={setShowLeaveGroupModal}
               />
             </Box>
           )}

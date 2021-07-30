@@ -10,7 +10,8 @@ import {
 } from "@chakra-ui/react";
 
 import React from "react";
-import { AiOutlineMessage } from "react-icons/ai";
+import { AiOutlineMessage, AiOutlineClose } from "react-icons/ai";
+import { setUser } from "../redux/user";
 import MeditationChat from "./MeditationChat";
 
 const ChatMessagesPopup = ({
@@ -18,6 +19,8 @@ const ChatMessagesPopup = ({
   setDrawerOpen,
   selectedRoom,
   setSelectedRoom,
+  showLeaveGroupModal,
+  setShowLeaveGroupModal,
 }) => {
   return (
     <Flex px={8}>
@@ -48,6 +51,17 @@ const ChatMessagesPopup = ({
               <Text>
                 {selectedRoom.title} - {selectedRoom.id}
               </Text>
+              {/* {icon} */}
+              <IconButton
+                bg="brand.600"
+                width="80px"
+                color="white"
+                _hover={{ bg: "brand.800" }}
+                onClick={() => setShowLeaveGroupModal(!showLeaveGroupModal)}
+                _focus={{ outline: "none" }}
+                size="lg"
+                icon={<AiOutlineClose size="24" />}
+              />
             </Flex>
             <Box py={2} />
 
