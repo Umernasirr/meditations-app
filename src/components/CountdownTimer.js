@@ -3,40 +3,11 @@ import React, { useEffect, useState } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import firebase from "../firebase";
 
-const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
-  const [members, setMembers] = useState([]);
+const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
+  // const [members, setMembers] = useState([]);
   const [localSelectedRoom, setLocalSelectedRoom] = useState([]);
   const [duration, setDuration] = useState(20);
   const roomsRef = firebase.firestore().collection("rooms");
-  useEffect(() => {
-    setMembers([]);
-
-    if (!selectedRoom) {
-      return;
-    }
-
-    const memberListener = roomsRef
-      .doc(selectedRoom.id)
-      .collection("members")
-      //  .orderBy("createdAt", "asc")
-      .onSnapshot((querySnapshot) => {
-        const members = querySnapshot.docs.map((doc) => {
-          const firebaseData = doc.data();
-
-          const data = {
-            id: doc.id,
-            createdAt: new Date().getTime(),
-            ...firebaseData,
-          };
-
-          return data;
-        });
-
-        setMembers(members);
-      });
-
-    return () => memberListener();
-  }, [selectedRoom]);
 
   useEffect(() => {
     if (!selectedRoom) {
