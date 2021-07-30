@@ -31,6 +31,8 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
 
           return data;
         });
+
+        setMembers(members);
       });
 
     return () => memberListener();
@@ -50,14 +52,13 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
         setLocalSelectedRoom(tempRoom);
 
         console.log(tempRoom);
-        console.log(tempRoom.startTimerStamp.seconds);
+        console.log(tempRoom.startTimerStamp?.seconds);
 
         if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
           // setDuration(selectedRoom.duration);
-          console.log(tempRoom.duration);
         } else {
           const difference = Math.ceil(
-            new Date().getTime() / 1000 - tempRoom.startTimerStamp.seconds
+            new Date().getTime() / 1000 - tempRoom.startTimerStamp?.seconds
           );
           setDuration(difference);
           console.log(difference, "Difference");
@@ -118,7 +119,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom }) => {
   return (
     <Flex direction="column" align="center">
       <Flex w="full" h="40px" borderRadius={16} align="center" justify="center">
-        {members.length > 0
+        {members && members.length > 0
           ? members.map((member) => {
               const user = member.user;
               let names;
