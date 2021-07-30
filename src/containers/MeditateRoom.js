@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-import { Flex, Box, Spacer, IconButton } from "@chakra-ui/react";
+import { Flex, Box, Spacer } from "@chakra-ui/react";
 import Header from "../components/Header";
-import { AiOutlineMessage } from "react-icons/ai";
 import firebase from "../firebase";
 import { useSelector } from "react-redux";
 import ChatListPopup from "../components/ChatListPopup";
@@ -29,26 +28,20 @@ const MeditationRooms = () => {
   const [showLeaveGroupModal, setShowLeaveGroupModal] = useState(false);
   const [members, setMembers] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loadingJoinRoom, setLoadingJoinRoom] = useState(false);
+  const [loadingCreateRoom, setLoadingCreateRoom] = useState(false);
+
   const roomsRef = firebase.firestore().collection("rooms");
 
-  // const roomsRef = firebase.firestore().collection("rooms");
-  console.log(selectedRoom, "select");
   const handleLeaveRoom = () => {
     let isAdmin = currentUser.uid === selectedRoom.user.uid;
-    console.log("Dsds", selectedRoom);
-    console.log(currentUser.uid, "dsd");
-    console.log(selectedRoom.user.uid, "room");
-
     roomsRef
       .doc(selectedRoom.id)
       .collection("members")
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          // console.log(doc.data());
-
           if (currentUser.uid === doc.data().user.uid) {
-            console.log(doc.id, "here");
             roomsRef
               .doc(selectedRoom.id)
               .delete()
@@ -96,16 +89,16 @@ const MeditationRooms = () => {
 
           return data;
         });
-
         setMembers(members);
       });
 
     return () => memberListener();
   }, [selectedRoom, currentUser]);
+
+  //
   const handleRoomCreate = () => {
-    // console.log(duration, "duration");
+    setLoadingCreateRoom(true);
     let doc = roomsRef.doc();
-    // setShowModal(false);
     doc
       .set({
         title: roomName,
@@ -134,12 +127,15 @@ const MeditationRooms = () => {
             setRooms([...rooms, newRoom]);
             setChatDrawerOpen(true);
             setShowModal(false);
+            setLoadingCreateRoom(false);
           });
       });
   };
 
+  //
   const handleJoinRoom = () => {
     let isMember = false;
+    setLoadingJoinRoom(true);
     roomsRef
       .doc(roomName)
       .get()
@@ -153,7 +149,6 @@ const MeditationRooms = () => {
             .get()
             .then((col) => {
               col.forEach((doc) => {
-                // roomsData.push({ ...doc.data(), id: doc.id });
                 if (doc.data().user.uid === currentUser.uid) {
                   isMember = true;
                 }
@@ -163,37 +158,24 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef
-                  .doc(roomName)
-                  .collection("members")
-                  .add({
-                    createdAt: new Date().getTime(),
-                    user: currentUser,
-                  });
-
-                roomsRef.onSnapshot((snapshot) => {
-                  const roomsData = [];
-                  snapshot.forEach((doc) => {
-                    let isMember = false;
-                    const members = roomsRef
-                      .doc(doc.id)
-                      .collection("members")
-                      .get()
-                      .then((ref) => {
-                        ref.forEach((reff) => {
-                          if (reff.data().user.uid === currentUser.uid) {
-                            isMember = true;
-                          }
-                        });
-                      })
-                      .then(() => {
-                        if (isMember) {
-                          setRooms(roomsData);
-                          return roomsData.push({ ...doc.data(), id: doc.id });
-                        }
-                      });
-                  });
+                roomsRef.doc(roomName).collection("members").add({
+                  createdAt: new Date().getTime(),
+                  user: currentUser,
                 });
+
+                const newRoom = {
+                  title: doc.data().title,
+                  id: doc.id,
+                  user: currentUser,
+                  status: false,
+                  duration: duration,
+                  createdAt: new Date().getTime(),
+                };
+                setSelectedRoom(newRoom);
+                setRooms([...rooms, newRoom]);
+                setChatDrawerOpen(true);
+                setShowJoinModal(false);
+                setLoadingJoinRoom(false);
               }
             });
         }
@@ -217,7 +199,6 @@ const MeditationRooms = () => {
           (memberData) => memberData.data().user.uid === currentUser.uid
         );
 
-        console.log(room.id);
         if (myRooms.length > 0) {
           const roomData = {
             id: room.id,
@@ -260,6 +241,7 @@ const MeditationRooms = () => {
         roomName={roomName}
         setRoomName={setRoomName}
         handleJoinRoom={handleJoinRoom}
+        loadingJoinRoom={loadingJoinRoom}
       />
 
       <LeaveGroupModal
@@ -277,6 +259,7 @@ const MeditationRooms = () => {
         handleRoomCreate={handleRoomCreate}
         duration={duration}
         setDuration={setDuration}
+        loadingCreateRoom={loadingCreateRoom}
       />
       <Flex mx={8} direction="column" h="full">
         <Flex h="full" w="full" align="center" justify="center">

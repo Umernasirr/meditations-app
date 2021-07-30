@@ -1,14 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { Input, InputGroup, InputLeftElement } from "@chakra-ui/input";
-import {
-  NumberInput,
-  NumberInputField,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  NumberInputStepper,
-  Text,
-  Flex,
-} from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import {
   Modal,
   ModalBody,
@@ -18,7 +9,6 @@ import {
   ModalHeader,
 } from "@chakra-ui/modal";
 import React from "react";
-import { AiOutlineMessage } from "react-icons/ai";
 
 const LeaveGroupModal = ({
   handleLeaveRoom,
