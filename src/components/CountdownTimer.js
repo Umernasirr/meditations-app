@@ -14,6 +14,7 @@ const CountdownTimer = ({
   // const [members, setMembers] = useState([]);
   const [localSelectedRoom, setLocalSelectedRoom] = useState([]);
   const [duration, setDuration] = useState(0);
+  const [localDate, setLocalDate] = useState(Date.now());
   const roomsRef = firebase.firestore().collection("rooms");
   const timerRef = useRef();
 
@@ -34,18 +35,20 @@ const CountdownTimer = ({
         const tempRoom = querySnapshot.data();
         setLocalSelectedRoom(tempRoom);
         if (tempRoom) {
-          console.log(tempRoom, "temp room");
           if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
             // setDuration(selectedRoom.duration);
             localDuration = selectedRoom.duration;
             console.log(localDuration, "localll");
           } else {
-            const difference = Math.ceil(
-              new Date().getTime() / 1000 - tempRoom.startTimerStamp?.seconds
-            );
+            console.log(tempRoom.startTimerStamp, "seconds in start stamp");
+            const difference = Date.now() - tempRoom.startTimerStamp;
+            // console.log("minus", localDuration * 1000 - difference);
             // setDuration(difference);
             localDuration = difference;
             console.log(difference, "Difference");
+            console.log(Date.now() + difference * 1000, "neww");
+            setLocalDate(Date.now() + difference);
+            console.log(Date.now() + difference, "end");
           }
           if (querySnapshot.data().status === true) {
             setIsPlaying(true);
@@ -56,7 +59,7 @@ const CountdownTimer = ({
           if (!isRead) {
             isRead = true;
             console.log("is the code cominghere", localDuration);
-            setDuration(localDuration);
+            // setDuration(20);
           }
         }
       });
@@ -106,9 +109,9 @@ const CountdownTimer = ({
   const Completionist = () => <span>You are good to go!</span>;
 
   const renderer = (props) => {
-    console.log(props, "seconddd");
     // props.api.start();
     // const timerRef =
+    console.log(props, props);
 
     if (props.completed) {
       // Render a completed state
@@ -172,7 +175,7 @@ const CountdownTimer = ({
         <Box width="500px" height="auto" bg="white">
           <Countdown
             key={key}
-            date={Date.now() + duration * 1000}
+            date={localDate}
             renderer={renderer}
             ref={timerRef}
             onStart={onStartHandler}
