@@ -168,18 +168,15 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef
-                  .doc(roomName)
-                  .collection("members")
-                  .add({
-                    createdAt: new Date().getTime(),
-                    user: currentUser,
-                  });
+                roomsRef.doc(roomName).collection("members").add({
+                  createdAt: new Date().getTime(),
+                  user: currentUser,
+                });
 
                 const newRoom = {
                   title: doc.data().title,
                   id: doc.id,
-                  user: currentUser,
+                  owner: doc.data().owner,
                   status: false,
                   duration: duration,
                   createdAt: new Date().getTime(),
