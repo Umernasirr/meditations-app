@@ -77,11 +77,14 @@ const CountdownTimer = ({
     // timerRef.current
 
     console.log(timerRef.current, "red");
-    timerRef.current.api.start();
+    if (isAdmin) {
+      timerRef.current.api.start();
+    }
     setIsPlaying(true);
   };
 
   const onStartHandler = () => {
+    console.log("onstart");
     if (isAdmin) {
       roomsRef.doc(selectedRoom.id).update({
         startTimerStamp: new Date().getTime(),
@@ -197,7 +200,7 @@ const CountdownTimer = ({
         // </CountdownCircleTimer>
       )}
       <Box my={4} />
-      {selectedRoom && (
+      {selectedRoom && isAdmin && (
         <Flex direction="row" align="center" justify="center">
           <Button
             width="200px"
