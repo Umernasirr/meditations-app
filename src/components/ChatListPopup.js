@@ -169,6 +169,8 @@ const ChatListPopup = ({
                       cursor: "pointer",
                     }}
                     onClick={() => {
+                      // TALAL HERE:
+
                       setSelectedRoom(chat);
                       setDrawerOpen(false);
                       setChatDrawerOpen(true);
@@ -219,7 +221,14 @@ const ChatListPopup = ({
                     No Rooms Found...
                   </Text>
 
-                  <Button onClick={() => {}}>Refresh Rooms</Button>
+                  <Button
+                    onClick={() => {
+                      setSearchTxt(" ");
+                      setSearchTxt("");
+                    }}
+                  >
+                    Refresh Rooms
+                  </Button>
                 </Fragment>
               )}
             </Flex>

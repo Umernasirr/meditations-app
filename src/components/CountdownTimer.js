@@ -1,7 +1,9 @@
 import { Box, Button, Flex, Text, Tooltip } from "@chakra-ui/react";
-import React, { useEffect, useState, useRef } from "react";
-import Countdown from "react-countdown";
+import React, { useEffect, useState } from "react";
 import firebase from "../firebase";
+import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+import ProgressProvider from "./ProgressProvider";
 
 const CountdownTimer = ({
   isPlaying,
@@ -12,7 +14,23 @@ const CountdownTimer = ({
 }) => {
   const [duration, setDuration] = useState(0);
   const roomsRef = firebase.firestore().collection("rooms");
-  const timerRef = useRef();
+
+  const [negative, setNegative] = useState(0);
+  const progressCircularHandler = () => {
+    // INTERVAL
+
+    setNegative(0);
+
+    const intervalId = setInterval(() => {
+      setNegative((prevState) => prevState - 1);
+      // console.log("HEY");
+      // console.log(timerDuration);
+    }, 1000);
+
+    setTimeout(() => {
+      clearInterval(intervalId);
+    }, duration * 1000);
+  };
 
   useEffect(() => {
     if (!selectedRoom) {
@@ -35,7 +53,8 @@ const CountdownTimer = ({
             localDuration = Math.ceil(difference / 1000);
           }
           if (querySnapshot.data().status === true) {
-            timerRef.current.api.start();
+            // timerRef.current.api.start();
+            progressCircularHandler();
           }
           if (!isRead) {
             isRead = true;
@@ -47,17 +66,17 @@ const CountdownTimer = ({
   }, [selectedRoom]);
 
   const [key, setKey] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
 
   const onStartTimer = () => {
     if (isAdmin) {
-      timerRef.current.api.start();
+      setIsPlaying(true);
+      onStartHandler();
     }
-    setIsPlaying(true);
   };
 
   const onStartHandler = () => {
     if (isAdmin) {
+      progressCircularHandler();
       roomsRef.doc(selectedRoom.id).update({
         startTimerStamp: new Date().getTime(),
         status: true,
@@ -67,21 +86,13 @@ const CountdownTimer = ({
 
   const onCompleteHandler = () => {
     if (isAdmin) {
+      setIsPlaying(false);
       setTimeout(() => {
         roomsRef.doc(selectedRoom.id).update({
           startTimerStamp: -1,
           status: false,
         });
       }, 1000);
-    }
-  };
-  const Completionist = () => <span>You are good to go!</span>;
-
-  const renderer = (props) => {
-    if (props.completed) {
-      return <Completionist />;
-    } else {
-      return <span>{props.seconds}</span>;
     }
   };
 
@@ -135,17 +146,46 @@ const CountdownTimer = ({
       </Flex>
       <Box my={4} />
       {selectedRoom && (
-        <Box width="500px" height="auto" bg="white">
-          <Countdown
-            key={key}
-            date={Date.now() + duration * 1000}
-            renderer={renderer}
-            ref={timerRef}
-            onStart={onStartHandler}
-            onComplete={onCompleteHandler}
-            autoStart={false}
-          />
-        </Box>
+        <Flex color="white">
+          <ProgressProvider
+            valueStart={duration}
+            valueEnd={0}
+            negative={negative}
+            onCompleteHandler={onCompleteHandler}
+            duration={duration}
+          >
+            {(value) => (
+              <Box w="400px">
+                <CircularProgressbar
+                  styles={buildStyles({
+                    textColor: "white",
+                    pathColor: "#7586DB",
+                    trailColor: "#FFDCE2",
+                    textSize: value !== 0 ? "18px" : "14px",
+                  })}
+                  maxValue={duration}
+                  value={value}
+                  text={value !== 0 ? value : "Ready"}
+                />
+                {/* 
+                <Countdown
+                  key={key}
+                  date={Date.now() + duration * 1000}
+                  renderer={renderer}
+                  ref={timerRef}
+                  autoStart={false}
+                /> */}
+              </Box>
+            )}
+          </ProgressProvider>
+
+          {/* <CircularProgressbarWithChildren
+            maxValue={timerDuration}
+            value={timerDuration}
+          >
+          
+          </CircularProgressbarWithChildren> */}
+        </Flex>
       )}
       <Box my={4} />
       {selectedRoom && isAdmin && (
@@ -156,6 +196,7 @@ const CountdownTimer = ({
             borderRadius={16}
             bg="brand.600"
             color="gray.100"
+            disabled={isPlaying}
             _hover={{ bg: "brand.800" }}
             onClick={onStartTimer}
           >
@@ -165,30 +206,7 @@ const CountdownTimer = ({
           </Button>
         </Flex>
       )}
-      <Box mt={2} />
-      {isCompleted ? (
-        <Button
-          height="40px"
-          bg="transparent"
-          borderRadius={32}
-          variant="link"
-          color="gray.100"
-          _hover={{ color: "brand.100" }}
-          _focus={{ outline: "none" }}
-          disabled={!isCompleted}
-          onClick={() => {
-            setKey(key + 1);
-            setIsPlaying(false);
-            setIsCompleted(false);
-          }}
-        >
-          <Text fontSize={20} fontWeight="bold">
-            Reset Timer
-          </Text>
-        </Button>
-      ) : (
-        <Box height="40px" />
-      )}
+      <Box my={8} />
     </Flex>
   );
 };
