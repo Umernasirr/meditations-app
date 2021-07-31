@@ -203,8 +203,12 @@ const MeditationRooms = () => {
           .collection("members")
           .get();
 
+        console.log(room.data().isGlobal);
+
         const myRooms = memberCollection.docs.filter(
-          (memberData) => memberData.data().user.uid === currentUser.uid
+          (memberData) =>
+            memberData.data().user.uid === currentUser.uid ||
+            room.data().isGlobal
         );
 
         if (myRooms.length > 0) {
@@ -213,6 +217,8 @@ const MeditationRooms = () => {
             ...room.data(),
             ...myRooms[0]?.data(),
           };
+
+          console.log({ roomData });
 
           tempRooms.push(roomData);
         }

@@ -11,8 +11,8 @@ import {
   PopoverBody,
   IconButton,
   Spinner,
-  Tooltip,
   Switch,
+  Button,
 } from "@chakra-ui/react";
 import { AiOutlineGroup } from "react-icons/ai";
 import { Fragment } from "react";
@@ -33,7 +33,7 @@ const ChatListPopup = ({
   showSearch,
 }) => {
   const [filteredRooms, setFilteredRooms] = useState([]);
-  const [searchTxt, setSearchTxt] = useState(" ");
+  const [searchTxt, setSearchTxt] = useState("");
   const [loading, setLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
@@ -77,9 +77,9 @@ const ChatListPopup = ({
     setFilteredRooms(rooms);
 
     setTimeout(() => {
-      setSearchTxt("");
       setLoading(false);
-    }, 6000);
+      setIsChecked(true);
+    }, 5000);
   }, [currentUser, rooms]);
 
   useEffect(() => {
@@ -216,9 +216,13 @@ const ChatListPopup = ({
                   />
                 </Flex>
               ) : (
-                <Text my={2} color="gray.600">
-                  No Rooms Found...
-                </Text>
+                <Fragment>
+                  <Text my={2} color="gray.600">
+                    No Rooms Found...
+                  </Text>
+
+                  <Button onClick={() => {}}>Refresh Rooms</Button>
+                </Fragment>
               )}
             </Flex>
           </PopoverBody>

@@ -7,12 +7,10 @@ import {
   Flex,
   Box,
   IconButton,
-  Tooltip,
 } from "@chakra-ui/react";
 
 import React from "react";
 import { AiOutlineMessage, AiOutlineClose } from "react-icons/ai";
-import { setUser } from "../redux/user";
 import MeditationChat from "./MeditationChat";
 
 const ChatMessagesPopup = ({
