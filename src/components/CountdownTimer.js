@@ -4,7 +4,13 @@ import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Countdown from "react-countdown";
 import firebase from "../firebase";
 
-const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
+const CountdownTimer = ({
+  isPlaying,
+  setIsPlaying,
+  selectedRoom,
+  members,
+  isAdmin,
+}) => {
   // const [members, setMembers] = useState([]);
   const [localSelectedRoom, setLocalSelectedRoom] = useState([]);
   const [duration, setDuration] = useState(0);
@@ -15,9 +21,12 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
     if (!selectedRoom) {
       return;
     }
+
+    console.log(isAdmin, "isadmin");
     // console.log(d)
     // console.log(selectedRoom);
     let localDuration = -1;
+    let isRead = false;
     const roomListener = roomsRef
       .doc(selectedRoom.id)
       //  .orderBy("createdAt", "asc")
@@ -40,10 +49,12 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
           }
           if (querySnapshot.data().status === true) {
             setIsPlaying(true);
+            timerRef.current.api.start();
           } else {
             setIsPlaying(false);
           }
-          if (duration !== localDuration) {
+          if (!isRead) {
+            isRead = true;
             console.log("is the code cominghere", localDuration);
             setDuration(localDuration);
           }
@@ -158,7 +169,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
             ref={timerRef}
             onStart={onStartHandler}
             onComplete={onCompleteHandler}
-            // autoStart={false}
+            autoStart={false}
           />
         </Box>
         // <CountdownCircleTimer

@@ -35,7 +35,7 @@ const MeditationRooms = () => {
 
   const handleLeaveRoom = () => {
     setLoadingLeaveRoom(true);
-    let isAdmin = currentUser.uid === selectedRoom.user.uid;
+    let isAdmin = currentUser.uid === selectedRoom.owner.uid;
     roomsRef
       .doc(selectedRoom.id)
       .collection("members")
@@ -75,8 +75,9 @@ const MeditationRooms = () => {
     if (!currentUser) {
       return;
     }
+    // console
 
-    setIsAdmin(currentUser.uid === selectedRoom.user.uid);
+    setIsAdmin(currentUser.uid === selectedRoom.owner.uid);
 
     const memberListener = roomsRef
       .doc(selectedRoom.id)
@@ -111,6 +112,7 @@ const MeditationRooms = () => {
         duration: duration,
         status: false,
         isGlobal: isChecked,
+        owner: currentUser,
       })
       .then(() => {
         roomsRef
@@ -124,7 +126,7 @@ const MeditationRooms = () => {
             const newRoom = {
               title: roomName,
               id: doc.id,
-              user: currentUser,
+              owner: doc.data().owner,
               status: false,
               duration: duration,
               isGlobal: isChecked,
@@ -282,6 +284,7 @@ const MeditationRooms = () => {
             setIsPlaying={setIsPlaying}
             selectedRoom={selectedRoom}
             members={members}
+            isAdmin={isAdmin}
           />
         </Flex>
         <Spacer />
