@@ -40,8 +40,11 @@ const CountdownTimer = ({
             localDuration = selectedRoom.duration;
             console.log(localDuration, "localll");
           } else {
-            console.log(tempRoom.startTimerStamp, "seconds in start stamp");
-            const difference = Date.now() - tempRoom.startTimerStamp;
+            console.log(
+              tempRoom.startTimerStamp.seconds,
+              "seconds in start stamp"
+            );
+            const difference = new Date().getTime - tempRoom.startTimerStamp;
             // console.log("minus", localDuration * 1000 - difference);
             // setDuration(difference);
             localDuration = difference;
