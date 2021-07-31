@@ -123,27 +123,26 @@ const MeditationRooms = () => {
             user: currentUser,
           })
           .then(() => {
-            const owner = roomsRef
+            roomsRef
               .doc(doc.id)
               .get()
-              .then((room) => room.owner);
-            console.log(doc.get().then((room) => room.data().owner));
+              .then((room) => {
+                const newRoom = {
+                  title: roomName,
+                  id: doc.id,
+                  owner: room.data().owner,
+                  status: false,
+                  duration: duration,
+                  isGlobal: isChecked,
+                  createdAt: new Date().getTime(),
+                };
+                setSelectedRoom(newRoom);
 
-            const newRoom = {
-              title: roomName,
-              id: doc.id,
-              owner: owner,
-              status: false,
-              duration: duration,
-              isGlobal: isChecked,
-              createdAt: new Date().getTime(),
-            };
-            setSelectedRoom(newRoom);
-
-            setRooms([...rooms, newRoom]);
-            setChatDrawerOpen(true);
-            setShowModal(false);
-            setLoadingCreateRoom(false);
+                setRooms([...rooms, newRoom]);
+                setChatDrawerOpen(true);
+                setShowModal(false);
+                setLoadingCreateRoom(false);
+              });
           });
       });
   };
