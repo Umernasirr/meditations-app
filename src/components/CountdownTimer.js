@@ -14,26 +14,6 @@ const CountdownTimer = ({
   const roomsRef = firebase.firestore().collection("rooms");
   const timerRef = useRef();
 
-  const [meditationText, setMeditationText] = useState("Get Ready");
-
-  const handleMeditationText = () => {
-    const n = 2;
-    setMeditationText("Breath In");
-
-    let meditationId = setInterval(() => {
-      if (n % 2 === 1) {
-        setMeditationText("Breath In");
-      } else {
-        setMeditationText("Breath Out");
-      }
-    }, 5000);
-
-    setTimeout(() => {
-      clearInterval(meditationId);
-      setMeditationText("Get Ready");
-    }, duration * 1000);
-  };
-
   useEffect(() => {
     if (!selectedRoom) {
       return;
@@ -46,6 +26,8 @@ const CountdownTimer = ({
     const roomListener = roomsRef
       .doc(selectedRoom.id)
       .onSnapshot((querySnapshot) => {
+        console.log("HEEEE");
+
         const tempRoom = querySnapshot.data();
         if (tempRoom) {
           if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
@@ -101,10 +83,26 @@ const CountdownTimer = ({
   };
 
   const renderer = (props) => {
+    console.log(props.seconds);
+
     if (props.completed) {
       return null;
     } else {
-      return <Text>{props.seconds}</Text>;
+      return (
+        <Flex direction="column" justify="center" align="center">
+          <Text>{props.seconds}</Text>
+          <Text color="brand.400" fontWeight="light" fontSize={40}>
+            {!props.completed
+              ? props.seconds % 8 === 1 ||
+                props.seconds % 8 === 2 ||
+                props.seconds % 8 === 3 ||
+                props.seconds % 8 === 4
+                ? "Breathe In"
+                : "Breath Out"
+              : "Get Ready! "}
+          </Text>
+        </Flex>
+      );
     }
   };
 
@@ -161,7 +159,6 @@ const CountdownTimer = ({
         <Flex
           width="360px"
           height="360px"
-          bg="blackAlpha.300"
           borderRadius="50%"
           borderColor="white"
           borderWidth={16}
@@ -170,6 +167,7 @@ const CountdownTimer = ({
           align="center"
           justify="center"
           direction="column"
+          bg="blackAlpha.400"
         >
           <Countdown
             key={key}
@@ -180,9 +178,6 @@ const CountdownTimer = ({
             onComplete={onCompleteHandler}
             autoStart={false}
           />
-          <Text ml={1} fontSize={32}>
-            {meditationText}
-          </Text>
         </Flex>
       )}
       <Box my={4} />
