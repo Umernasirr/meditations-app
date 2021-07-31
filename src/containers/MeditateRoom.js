@@ -123,10 +123,16 @@ const MeditationRooms = () => {
             user: currentUser,
           })
           .then(() => {
+            const owner = roomsRef
+              .doc(doc.id)
+              .get()
+              .then((room) => room.owner);
+            console.log(doc.get().then((room) => room.data().owner));
+
             const newRoom = {
               title: roomName,
               id: doc.id,
-              owner: doc.data().owner,
+              owner: owner,
               status: false,
               duration: duration,
               isGlobal: isChecked,
