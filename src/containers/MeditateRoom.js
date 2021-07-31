@@ -166,10 +166,13 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef.doc(roomName).collection("members").add({
-                  createdAt: new Date().getTime(),
-                  user: currentUser,
-                });
+                roomsRef
+                  .doc(roomName)
+                  .collection("members")
+                  .add({
+                    createdAt: new Date().getTime(),
+                    user: currentUser,
+                  });
 
                 const newRoom = {
                   title: doc.data().title,
@@ -198,6 +201,7 @@ const MeditationRooms = () => {
       const firebaseData = await roomsRef.get();
 
       firebaseData.docs.map(async (room) => {
+        // console.log(room.get(), "rooom");
         const memberCollection = await roomsRef
           .doc(room.id)
           .collection("members")
@@ -224,6 +228,7 @@ const MeditationRooms = () => {
         }
         //
       });
+      console.log(tempRooms, "temp room");
 
       setRooms(tempRooms);
     };
