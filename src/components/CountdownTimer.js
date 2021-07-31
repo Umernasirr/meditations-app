@@ -1,6 +1,5 @@
 import { Box, Button, Flex, Text, Tooltip } from "@chakra-ui/react";
 import React, { useEffect, useState, useRef } from "react";
-import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Countdown from "react-countdown";
 import firebase from "../firebase";
 
@@ -11,10 +10,7 @@ const CountdownTimer = ({
   members,
   isAdmin,
 }) => {
-  // const [members, setMembers] = useState([]);
-  const [localSelectedRoom, setLocalSelectedRoom] = useState([]);
   const [duration, setDuration] = useState(0);
-  const [localDate, setLocalDate] = useState(Date.now());
   const roomsRef = firebase.firestore().collection("rooms");
   const timerRef = useRef();
 
@@ -25,34 +21,28 @@ const CountdownTimer = ({
 
     let localDuration = -1;
     let isRead = false;
+
     const roomListener = roomsRef
       .doc(selectedRoom.id)
-      //  .orderBy("createdAt", "asc")
       .onSnapshot((querySnapshot) => {
         const tempRoom = querySnapshot.data();
-        setLocalSelectedRoom(tempRoom);
         if (tempRoom) {
           if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
-            // setDuration(selectedRoom.duration);
+            localDuration = tempRoom.duration;
+            isRead = false;
           } else {
             const difference = new Date().getTime() - tempRoom.startTimerStamp;
-            console.log("HEY HEY HEY HEY ");
-
-            if (!isRead) {
-              setDuration(localDuration - difference);
-            }
+            localDuration = Math.ceil(difference / 1000);
           }
           if (querySnapshot.data().status === true) {
             timerRef.current.api.start();
           }
           if (!isRead) {
             isRead = true;
-            setDuration(tempRoom.duration);
+            setDuration(localDuration);
           }
         }
       });
-
-    // }
     return () => roomListener();
   }, [selectedRoom]);
 
@@ -60,13 +50,6 @@ const CountdownTimer = ({
   const [isCompleted, setIsCompleted] = useState(false);
 
   const onStartTimer = () => {
-    // roomsRef.doc(selectedRoom.id).update({
-    //   startTimerStamp: new Date().getTime(),
-    //   status: true,
-    // });
-    // setKey(key + 1);
-    // timerRef.current
-
     if (isAdmin) {
       timerRef.current.api.start();
     }
@@ -95,14 +78,9 @@ const CountdownTimer = ({
   const Completionist = () => <span>You are good to go!</span>;
 
   const renderer = (props) => {
-    // props.api.start();
-    // const timerRef =
-
     if (props.completed) {
-      // Render a completed state
       return <Completionist />;
     } else {
-      // Render a countdown
       return <span>{props.seconds}</span>;
     }
   };
