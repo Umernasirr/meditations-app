@@ -71,20 +71,20 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
       return <span>{seconds}</span>;
     }
   };
-  // const renderTime = ({ remainingTime }) => {
-  //   if (remainingTime === 0) {
-  //     return (
-  //       <Flex direction="column" justify="center" align="center">
-  //         <Text fontSize={40} fontWeight="medium" color="brand.400">
-  //           Meditation
-  //         </Text>
-  //         <Box mt={2} />
-  //         <Text fontSize={32} color="brand.200">
-  //           Completed
-  //         </Text>
-  //       </Flex>
-  //     );
-  //   }
+  const renderTime = ({ remainingTime }) => {
+    if (remainingTime === 0) {
+      return (
+        <Flex direction="column" justify="center" align="center">
+          <Text fontSize={40} fontWeight="medium" color="brand.400">
+            Meditation
+          </Text>
+          <Box mt={2} />
+          <Text fontSize={32} color="brand.200">
+            Completed
+          </Text>
+        </Flex>
+      );
+    }
 
     return (
       <Flex direction="column" justify="center" align="center">
