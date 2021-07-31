@@ -23,9 +23,6 @@ const CountdownTimer = ({
       return;
     }
 
-    console.log(isAdmin, "isadmin");
-    // console.log(d)
-    // console.log(selectedRoom);
     let localDuration = -1;
     let isRead = false;
     const roomListener = roomsRef
@@ -37,32 +34,20 @@ const CountdownTimer = ({
         if (tempRoom) {
           if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
             // setDuration(selectedRoom.duration);
-            localDuration = selectedRoom.duration;
-            console.log(localDuration, "localll");
           } else {
-            console.log(
-              tempRoom.startTimerStamp.seconds,
-              "seconds in start stamp"
-            );
-            const difference = new Date().getTime - tempRoom.startTimerStamp;
-            // console.log("minus", localDuration * 1000 - difference);
-            // setDuration(difference);
-            localDuration = difference;
-            console.log(difference, "Difference");
-            console.log(Date.now() + difference * 1000, "neww");
-            setLocalDate(Date.now() + difference);
-            console.log(Date.now() + difference, "end");
+            const difference = new Date().getTime() - tempRoom.startTimerStamp;
+            console.log("HEY HEY HEY HEY ");
+
+            if (!isRead) {
+              setDuration(localDuration - difference);
+            }
           }
           if (querySnapshot.data().status === true) {
-            setIsPlaying(true);
             timerRef.current.api.start();
-          } else {
-            setIsPlaying(false);
           }
           if (!isRead) {
             isRead = true;
-            console.log("is the code cominghere", localDuration);
-            // setDuration(20);
+            setDuration(tempRoom.duration);
           }
         }
       });
@@ -82,7 +67,6 @@ const CountdownTimer = ({
     // setKey(key + 1);
     // timerRef.current
 
-    console.log(timerRef.current, "red");
     if (isAdmin) {
       timerRef.current.api.start();
     }
@@ -90,7 +74,6 @@ const CountdownTimer = ({
   };
 
   const onStartHandler = () => {
-    console.log("onstart");
     if (isAdmin) {
       roomsRef.doc(selectedRoom.id).update({
         startTimerStamp: new Date().getTime(),
@@ -114,7 +97,6 @@ const CountdownTimer = ({
   const renderer = (props) => {
     // props.api.start();
     // const timerRef =
-    console.log(props, props);
 
     if (props.completed) {
       // Render a completed state
@@ -178,7 +160,7 @@ const CountdownTimer = ({
         <Box width="500px" height="auto" bg="white">
           <Countdown
             key={key}
-            date={localDate}
+            date={Date.now() + duration * 1000}
             renderer={renderer}
             ref={timerRef}
             onStart={onStartHandler}
@@ -186,24 +168,6 @@ const CountdownTimer = ({
             autoStart={false}
           />
         </Box>
-        // <CountdownCircleTimer
-        //   key={key}
-        //   size={400}
-        //   isPlaying={isPlaying}
-        //   strokeWidth={16}
-        //   duration={duration}
-        //   colors={[["#6269A0"], ["#ee4f4f"]]}
-        //   onComplete={() => {
-        //     setIsCompleted(true);
-        //     roomsRef.doc(selectedRoom.id).update({
-        //       startTimerStamp: -1,
-        //       status: false,
-        //     });
-        //     return [false, 1000];
-        //   }}
-        // >
-        //   {renderTime}
-        // </CountdownCircleTimer>
       )}
       <Box my={4} />
       {selectedRoom && isAdmin && (
@@ -215,7 +179,6 @@ const CountdownTimer = ({
             bg="brand.600"
             color="gray.100"
             _hover={{ bg: "brand.800" }}
-            disabled={isPlaying}
             onClick={onStartTimer}
           >
             <Text fontSize={18} fontWeight="bold">
