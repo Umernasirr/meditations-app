@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/button";
-import { Text } from "@chakra-ui/react";
+import { Text, Spinner } from "@chakra-ui/react";
 import {
   Modal,
   ModalBody,
@@ -15,6 +15,7 @@ const LeaveGroupModal = ({
   showLeaveGroupModal,
   setShowLeaveGroupModal,
   isAdmin,
+  loadingLeaveRoom,
 }) => {
   return (
     <Modal
@@ -33,21 +34,24 @@ const LeaveGroupModal = ({
           </Text>
         </ModalBody>
         <ModalFooter>
+          {loadingLeaveRoom && (
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="md"
+            />
+          )}
+
           <Button
             colorScheme="red"
-            mr={3}
+            mx={3}
             onClick={() => setShowLeaveGroupModal(false)}
           >
             Cancel
           </Button>
-          {/* <Button
-            bg="brand.600"
-            color="gray.100"
-            _hover={{ backgroundColor: "brand.800" }}
-            onClick={() => handlLea(false)}
-          >
-            Cancel
-          </Button> */}
+
           <Button
             bg="brand.600"
             color="gray.100"

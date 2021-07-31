@@ -30,10 +30,11 @@ const MeditationRooms = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loadingJoinRoom, setLoadingJoinRoom] = useState(false);
   const [loadingCreateRoom, setLoadingCreateRoom] = useState(false);
-
+  const [loadingLeaveRoom, setLoadingLeaveRoom] = useState(false);
   const roomsRef = firebase.firestore().collection("rooms");
 
   const handleLeaveRoom = () => {
+    setLoadingLeaveRoom(true);
     let isAdmin = currentUser.uid === selectedRoom.user.uid;
     roomsRef
       .doc(selectedRoom.id)
@@ -54,11 +55,15 @@ const MeditationRooms = () => {
               doc.ref.delete().then(() => {
                 setSelectedRoom(undefined);
                 setShowLeaveGroupModal(false);
+                setLoadingLeaveRoom(false);
               });
             }
           }
         });
       });
+
+    const tempRooms = rooms.filter((room) => room.id !== selectedRoom.id);
+    setRooms(tempRooms);
   };
 
   useEffect(() => {
@@ -96,7 +101,8 @@ const MeditationRooms = () => {
   }, [selectedRoom, currentUser]);
 
   //
-  const handleRoomCreate = () => {
+  const handleRoomCreate = (isChecked) => {
+    // isChecked
     setLoadingCreateRoom(true);
     let doc = roomsRef.doc();
     doc
@@ -104,6 +110,7 @@ const MeditationRooms = () => {
         title: roomName,
         duration: duration,
         status: false,
+        isGlobal: isChecked,
       })
       .then(() => {
         roomsRef
@@ -120,6 +127,7 @@ const MeditationRooms = () => {
               user: currentUser,
               status: false,
               duration: duration,
+              isGlobal: isChecked,
               createdAt: new Date().getTime(),
             };
             setSelectedRoom(newRoom);
@@ -249,6 +257,7 @@ const MeditationRooms = () => {
         setShowLeaveGroupModal={setShowLeaveGroupModal}
         handleLeaveRoom={handleLeaveRoom}
         isAdmin={isAdmin}
+        loadingLeaveRoom={loadingLeaveRoom}
       />
       {/* Create New Room Modal */}
       <CreateNewRoomModal
@@ -270,7 +279,6 @@ const MeditationRooms = () => {
             members={members}
           />
         </Flex>
-
         <Spacer />
 
         <Flex

@@ -11,6 +11,8 @@ import {
   PopoverBody,
   IconButton,
   Spinner,
+  Tooltip,
+  Switch,
 } from "@chakra-ui/react";
 import { AiOutlineGroup } from "react-icons/ai";
 import { Fragment } from "react";
@@ -33,18 +35,37 @@ const ChatListPopup = ({
   const [filteredRooms, setFilteredRooms] = useState([]);
   const [searchTxt, setSearchTxt] = useState(" ");
   const [loading, setLoading] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+
   const handleChangeSearch = (e) => {
     const query = e.target.value;
     setSearchTxt(query);
 
     if (query === "") {
-      setFilteredRooms(rooms);
+      if (!isChecked) {
+        const tempRooms = rooms && rooms.filter((room) => room.isGlobal);
+        setFilteredRooms(tempRooms);
+      } else {
+        const tempRooms = rooms && rooms.filter((room) => !room.isGlobal);
+        setFilteredRooms(tempRooms);
+      }
     } else {
       if (rooms && rooms.length > 0) {
         const tempRooms = rooms.filter((room) =>
           room.title.toLowerCase().includes(query.toLowerCase())
         );
-        setFilteredRooms(tempRooms);
+
+        if (!isChecked) {
+          const tempRooms2 =
+            tempRooms && tempRooms.filter((room) => room.isGlobal);
+
+          console.log(tempRooms2);
+          setFilteredRooms(tempRooms2);
+        } else {
+          const tempRooms2 =
+            tempRooms && tempRooms.filter((room) => !room.isGlobal);
+          setFilteredRooms(tempRooms2);
+        }
       }
     }
   };
@@ -52,6 +73,7 @@ const ChatListPopup = ({
   useEffect(() => {
     setLoading(true);
     setFilteredRooms([]);
+
     setFilteredRooms(rooms);
 
     setTimeout(() => {
@@ -59,6 +81,16 @@ const ChatListPopup = ({
       setLoading(false);
     }, 6000);
   }, [currentUser, rooms]);
+
+  useEffect(() => {
+    if (!isChecked) {
+      const tempRooms = rooms && rooms.filter((room) => room.isGlobal);
+      setFilteredRooms(tempRooms);
+    } else {
+      const tempRooms = rooms && rooms.filter((room) => !room.isGlobal);
+      setFilteredRooms(tempRooms);
+    }
+  }, [isChecked, rooms]);
 
   return (
     <Flex px={paddingX}>
@@ -84,6 +116,18 @@ const ChatListPopup = ({
           <PopoverBody bg="gray.100" borderRadius={16}>
             {showSearch && (
               <Fragment>
+                <Box pt={2} />
+                <Flex align="center" justify="flex-end">
+                  <Text fontWeight="medium">Private Rooms </Text>
+                  <Box mx={1} />
+                  <Switch
+                    isChecked={isChecked}
+                    onChange={() => setIsChecked(!isChecked)}
+                    color="brand.600"
+                    size="lg"
+                  />
+                </Flex>
+
                 <Box py={2} />
                 <Input
                   placeholder="Search Room..."
