@@ -10,6 +10,7 @@ import {
   Button,
   Spacer,
   useClipboard,
+  Spinner,
 } from "@chakra-ui/react";
 import { AiOutlineMessage } from "react-icons/all";
 
@@ -17,6 +18,7 @@ import firebase from "../firebase";
 import { useSelector } from "react-redux";
 
 const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const [messageTxt, setMessageTxt] = useState("");
   const { currentUser } = useSelector((state) => state.user);
@@ -46,6 +48,7 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
 
   useEffect(() => {
     setMessages([]);
+    setLoading(true);
     const messagesListener = roomsRef
       .doc(selectedRoom.id)
       .collection("messages")
@@ -63,6 +66,7 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
         });
 
         setMessages(messages);
+        setLoading(false);
         scrollToBottom();
       });
 
@@ -156,6 +160,17 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
                 {hasCopied ? "Copied" : "Copy"}
               </Button>
             </Flex>
+
+            <Box my={2} />
+            {loading && (
+              <Spinner
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="blue.500"
+                size="xl"
+              />
+            )}
           </Flex>
         )}
       </Flex>

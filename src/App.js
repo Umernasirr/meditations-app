@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Route, Switch, useHistory } from "react-router-dom";
 import { Flex } from "@chakra-ui/layout";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import firebase from "firebase";
 
 import Login from "./containers/Login";
@@ -14,7 +14,6 @@ import MeditateRoom from "./containers/MeditateRoom";
 function App() {
   const history = useHistory();
   const dispatch = useDispatch();
-  const { currentUser } = useSelector((state) => state.user);
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {

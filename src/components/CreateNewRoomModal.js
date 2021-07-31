@@ -8,6 +8,7 @@ import {
   NumberInputStepper,
   Text,
   Flex,
+  Spinner,
 } from "@chakra-ui/react";
 import {
   Modal,
@@ -28,6 +29,7 @@ const CreateNewRoomModal = ({
   handleRoomCreate,
   duration,
   setDuration,
+  loadingCreateRoom,
 }) => {
   return (
     <Modal size="xl" isOpen={showModal} onClose={() => setShowModal(false)}>
@@ -76,7 +78,16 @@ const CreateNewRoomModal = ({
           </InputGroup>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="red" mr={3} onClick={() => setShowModal(false)}>
+          {loadingCreateRoom && (
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="md"
+            />
+          )}
+          <Button colorScheme="red" mx={3} onClick={() => setShowModal(false)}>
             Cancel
           </Button>
           <Button
