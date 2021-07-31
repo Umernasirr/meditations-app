@@ -75,25 +75,30 @@ const CountdownTimer = ({
     // });
     // setKey(key + 1);
     // timerRef.current
+
     console.log(timerRef.current, "red");
     timerRef.current.api.start();
     setIsPlaying(true);
   };
 
   const onStartHandler = () => {
-    roomsRef.doc(selectedRoom.id).update({
-      startTimerStamp: new Date().getTime(),
-      status: true,
-    });
+    if (isAdmin) {
+      roomsRef.doc(selectedRoom.id).update({
+        startTimerStamp: new Date().getTime(),
+        status: true,
+      });
+    }
   };
 
   const onCompleteHandler = () => {
-    setTimeout(() => {
-      roomsRef.doc(selectedRoom.id).update({
-        startTimerStamp: -1,
-        status: false,
-      });
-    }, 1000);
+    if (isAdmin) {
+      setTimeout(() => {
+        roomsRef.doc(selectedRoom.id).update({
+          startTimerStamp: -1,
+          status: false,
+        });
+      }, 1000);
+    }
   };
   const Completionist = () => <span>You are good to go!</span>;
 
