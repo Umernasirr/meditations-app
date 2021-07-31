@@ -201,13 +201,10 @@ const MeditationRooms = () => {
       const firebaseData = await roomsRef.get();
 
       firebaseData.docs.map(async (room) => {
-        // console.log(room.get(), "rooom");
         const memberCollection = await roomsRef
           .doc(room.id)
           .collection("members")
           .get();
-
-        console.log(room.data().isGlobal);
 
         const myRooms = memberCollection.docs.filter(
           (memberData) =>
@@ -222,13 +219,10 @@ const MeditationRooms = () => {
             ...myRooms[0]?.data(),
           };
 
-          console.log({ roomData });
-
           tempRooms.push(roomData);
         }
         //
       });
-      console.log(tempRooms, "temp room");
 
       setRooms(tempRooms);
     };

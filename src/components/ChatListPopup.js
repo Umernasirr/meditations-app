@@ -59,7 +59,6 @@ const ChatListPopup = ({
           const tempRooms2 =
             tempRooms && tempRooms.filter((room) => room.isGlobal);
 
-          console.log(tempRooms2);
           setFilteredRooms(tempRooms2);
         } else {
           const tempRooms2 =
@@ -73,7 +72,6 @@ const ChatListPopup = ({
   useEffect(() => {
     setLoading(true);
     setFilteredRooms([]);
-    console.log(rooms, "rrooom");
     setFilteredRooms(rooms);
 
     setTimeout(() => {
@@ -85,7 +83,6 @@ const ChatListPopup = ({
   useEffect(() => {
     if (!isChecked) {
       const tempRooms = rooms && rooms.filter((room) => room.isGlobal);
-      console.log(rooms, "in useeffect");
       setFilteredRooms(tempRooms);
     } else {
       const tempRooms = rooms && rooms.filter((room) => !room.isGlobal);

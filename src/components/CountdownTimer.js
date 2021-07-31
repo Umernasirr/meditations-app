@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Text, Tooltip } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
 import Countdown from "react-countdown";
 import firebase from "../firebase";
@@ -7,13 +7,15 @@ import firebase from "../firebase";
 const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
   // const [members, setMembers] = useState([]);
   const [localSelectedRoom, setLocalSelectedRoom] = useState([]);
-  const [duration, setDuration] = useState(20);
+  const [duration, setDuration] = useState(0);
   const roomsRef = firebase.firestore().collection("rooms");
+  const timerRef = useRef();
 
   useEffect(() => {
     if (!selectedRoom) {
       return;
     }
+    // console.log(d)
     // console.log(selectedRoom);
     let localDuration = -1;
     const roomListener = roomsRef
@@ -23,6 +25,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
         const tempRoom = querySnapshot.data();
         setLocalSelectedRoom(tempRoom);
         if (tempRoom) {
+          console.log(tempRoom, "temp room");
           if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
             // setDuration(selectedRoom.duration);
             localDuration = selectedRoom.duration;
@@ -40,8 +43,10 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
           } else {
             setIsPlaying(false);
           }
-          console.log("is the code cominghere", localDuration);
-          setDuration(localDuration);
+          if (duration !== localDuration) {
+            console.log("is the code cominghere", localDuration);
+            setDuration(localDuration);
+          }
         }
       });
 
@@ -53,52 +58,46 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
   const [isCompleted, setIsCompleted] = useState(false);
 
   const onStartTimer = () => {
+    // roomsRef.doc(selectedRoom.id).update({
+    //   startTimerStamp: new Date().getTime(),
+    //   status: true,
+    // });
+    // setKey(key + 1);
+    // timerRef.current
+    console.log(timerRef.current, "red");
+    timerRef.current.api.start();
+    setIsPlaying(true);
+  };
+
+  const onStartHandler = () => {
     roomsRef.doc(selectedRoom.id).update({
       startTimerStamp: new Date().getTime(),
       status: true,
     });
+  };
 
-    setIsPlaying(true);
+  const onCompleteHandler = () => {
+    setTimeout(() => {
+      roomsRef.doc(selectedRoom.id).update({
+        startTimerStamp: -1,
+        status: false,
+      });
+    }, 1000);
   };
   const Completionist = () => <span>You are good to go!</span>;
 
-  const renderer = ({ hours, minutes, seconds, completed }) => {
-    if (completed) {
+  const renderer = (props) => {
+    console.log(props, "seconddd");
+    // props.api.start();
+    // const timerRef =
+
+    if (props.completed) {
       // Render a completed state
       return <Completionist />;
     } else {
       // Render a countdown
-      return <span>{seconds}</span>;
+      return <span>{props.seconds}</span>;
     }
-  };
-  const renderTime = ({ remainingTime }) => {
-    if (remainingTime === 0) {
-      return (
-        <Flex direction="column" justify="center" align="center">
-          <Text fontSize={40} fontWeight="medium" color="brand.400">
-            Meditation
-          </Text>
-          <Box mt={2} />
-          <Text fontSize={32} color="brand.200">
-            Completed
-          </Text>
-        </Flex>
-      );
-    }
-
-    return (
-      <Flex direction="column" justify="center" align="center">
-        <Text fontSize={24} color="gray.100">
-          Remaining
-        </Text>
-        <Text fontSize={64} fontWeight="bold">
-          {remainingTime}
-        </Text>
-        <Text fontSize={24} color="gray.100">
-          seconds
-        </Text>
-      </Flex>
-    );
   };
 
   return (
@@ -150,9 +149,17 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
           : null}
       </Flex>
       <Box my={4} />
-      {selectedRoom && selectedRoom.duration && duration !== -1 && (
+      {selectedRoom && (
         <Box width="500px" height="auto" bg="white">
-          <Countdown date={duration} renderer={renderer} />
+          <Countdown
+            key={key}
+            date={Date.now() + duration * 1000}
+            renderer={renderer}
+            ref={timerRef}
+            onStart={onStartHandler}
+            onComplete={onCompleteHandler}
+            // autoStart={false}
+          />
         </Box>
         // <CountdownCircleTimer
         //   key={key}
