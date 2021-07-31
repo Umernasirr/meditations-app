@@ -173,10 +173,13 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef.doc(roomName).collection("members").add({
-                  createdAt: new Date().getTime(),
-                  user: currentUser,
-                });
+                roomsRef
+                  .doc(roomName)
+                  .collection("members")
+                  .add({
+                    createdAt: new Date().getTime(),
+                    user: currentUser,
+                  });
 
                 const newRoom = {
                   title: doc.data().title,
@@ -196,6 +199,59 @@ const MeditationRooms = () => {
         }
       });
     setRoomName("");
+  };
+
+  const handleGlobalRoom = (chat) => {
+    let isMember = false;
+    // setLoadingJoinRoom(true);
+    roomsRef
+      .doc(chat.id)
+      .get()
+      .then((doc) => {
+        if (!doc.data() || doc.data() === undefined) {
+          setRoomError("No room found");
+        } else {
+          roomsRef
+            .doc(chat.id)
+            .collection("members")
+            .get()
+            .then((col) => {
+              col.forEach((doc) => {
+                if (doc.data().user.uid === currentUser.uid) {
+                  isMember = true;
+                }
+              });
+            })
+            .then(() => {
+              if (isMember) {
+                setRoomError("Already a part of this room");
+              } else {
+                roomsRef
+                  .doc(chat.id)
+                  .collection("members")
+                  .add({
+                    createdAt: new Date().getTime(),
+                    user: currentUser,
+                  });
+
+                const newRoom = {
+                  title: doc.data().title,
+                  id: doc.id,
+                  owner: doc.data().owner,
+                  status: false,
+                  duration: duration,
+                  createdAt: new Date().getTime(),
+                };
+                setSelectedRoom(newRoom);
+                setRooms([...rooms, newRoom]);
+                setChatDrawerOpen(true);
+                // setShowJoinModal(false);
+                // setLoadingJoinRoom(false);
+              }
+            });
+        }
+      });
+    // setRoomName("");
   };
 
   useEffect(() => {
@@ -311,6 +367,7 @@ const MeditationRooms = () => {
               placement={"top"}
               paddingX={8}
               hasBorder={false}
+              handleGlobalRoom={handleGlobalRoom}
               showSearch={true}
             />
           </Box>
