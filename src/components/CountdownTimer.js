@@ -40,6 +40,7 @@ const CountdownTimer = ({
     }
 
     let localDuration = -1;
+
     let isRead = false;
 
     const roomListener = roomsRef
