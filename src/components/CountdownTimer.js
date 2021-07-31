@@ -14,6 +14,26 @@ const CountdownTimer = ({
   const roomsRef = firebase.firestore().collection("rooms");
   const timerRef = useRef();
 
+  const [meditationText, setMeditationText] = useState("Get Ready");
+
+  const handleMeditationText = () => {
+    const n = 2;
+    setMeditationText("Breath In");
+
+    let meditationId = setInterval(() => {
+      if (n % 2 === 1) {
+        setMeditationText("Breath In");
+      } else {
+        setMeditationText("Breath Out");
+      }
+    }, 5000);
+
+    setTimeout(() => {
+      clearInterval(meditationId);
+      setMeditationText("Get Ready");
+    }, duration * 1000);
+  };
+
   useEffect(() => {
     if (!selectedRoom) {
       return;
@@ -47,7 +67,6 @@ const CountdownTimer = ({
   }, [selectedRoom]);
 
   const [key, setKey] = useState(0);
-  const [isCompleted, setIsCompleted] = useState(false);
 
   const onStartTimer = () => {
     if (isAdmin) {
@@ -58,6 +77,8 @@ const CountdownTimer = ({
 
   const onStartHandler = () => {
     if (isAdmin) {
+      // handleMeditationText();
+
       roomsRef.doc(selectedRoom.id).update({
         startTimerStamp: new Date().getTime(),
         status: true,
@@ -73,15 +94,16 @@ const CountdownTimer = ({
           status: false,
         });
       }, 1000);
+
+      setIsPlaying(false);
     }
   };
-  const Completionist = () => <span>You are good to go!</span>;
 
   const renderer = (props) => {
     if (props.completed) {
-      return <Completionist />;
+      return null;
     } else {
-      return <span>{props.seconds}</span>;
+      return <Text>{props.seconds}</Text>;
     }
   };
 
@@ -135,7 +157,19 @@ const CountdownTimer = ({
       </Flex>
       <Box my={4} />
       {selectedRoom && (
-        <Box width="500px" height="auto" bg="white">
+        <Flex
+          width="360px"
+          height="360px"
+          bg="blackAlpha.300"
+          borderRadius="50%"
+          borderColor="white"
+          borderWidth={16}
+          color="white"
+          fontSize={60}
+          align="center"
+          justify="center"
+          direction="column"
+        >
           <Countdown
             key={key}
             date={Date.now() + duration * 1000}
@@ -145,7 +179,10 @@ const CountdownTimer = ({
             onComplete={onCompleteHandler}
             autoStart={false}
           />
-        </Box>
+          <Text ml={1} fontSize={32}>
+            {meditationText}
+          </Text>
+        </Flex>
       )}
       <Box my={4} />
       {selectedRoom && isAdmin && (
@@ -156,6 +193,7 @@ const CountdownTimer = ({
             borderRadius={16}
             bg="brand.600"
             color="gray.100"
+            disabled={isPlaying}
             _hover={{ bg: "brand.800" }}
             onClick={onStartTimer}
           >
@@ -165,30 +203,7 @@ const CountdownTimer = ({
           </Button>
         </Flex>
       )}
-      <Box mt={2} />
-      {isCompleted ? (
-        <Button
-          height="40px"
-          bg="transparent"
-          borderRadius={32}
-          variant="link"
-          color="gray.100"
-          _hover={{ color: "brand.100" }}
-          _focus={{ outline: "none" }}
-          disabled={!isCompleted}
-          onClick={() => {
-            setKey(key + 1);
-            setIsPlaying(false);
-            setIsCompleted(false);
-          }}
-        >
-          <Text fontSize={20} fontWeight="bold">
-            Reset Timer
-          </Text>
-        </Button>
-      ) : (
-        <Box height="40px" />
-      )}
+      <Box mt={12} />
     </Flex>
   );
 };
