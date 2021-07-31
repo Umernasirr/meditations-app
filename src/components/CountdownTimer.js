@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Text, Tooltip } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { CountdownCircleTimer } from "react-countdown-circle-timer";
+import Countdown from "react-countdown";
 import firebase from "../firebase";
 
 const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
@@ -14,7 +15,7 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
       return;
     }
     // console.log(selectedRoom);
-
+    let localDuration = -1;
     const roomListener = roomsRef
       .doc(selectedRoom.id)
       //  .orderBy("createdAt", "asc")
@@ -27,11 +28,14 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
 
           if (tempRoom.status === false || tempRoom.startTimerStamp === -1) {
             // setDuration(selectedRoom.duration);
+            localDuration = selectedRoom.duration;
+            console.log(localDuration, "localll");
           } else {
             const difference = Math.ceil(
               new Date().getTime() / 1000 - tempRoom.startTimerStamp?.seconds
             );
-            setDuration(difference);
+            // setDuration(difference);
+            localDuration = difference;
             console.log(difference, "Difference");
           }
           if (querySnapshot.data().status === true) {
@@ -39,6 +43,8 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
           } else {
             setIsPlaying(false);
           }
+          console.log("is the code cominghere", localDuration);
+          setDuration(localDuration);
         }
       });
 
@@ -56,6 +62,17 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
     });
 
     setIsPlaying(true);
+  };
+  const Completionist = () => <span>You are good to go!</span>;
+
+  const renderer = ({ hours, minutes, seconds, completed }) => {
+    if (completed) {
+      // Render a completed state
+      return <Completionist />;
+    } else {
+      // Render a countdown
+      return <span>{seconds}</span>;
+    }
   };
   const renderTime = ({ remainingTime }) => {
     if (remainingTime === 0) {
@@ -138,24 +155,27 @@ const CountdownTimer = ({ isPlaying, setIsPlaying, selectedRoom, members }) => {
       </Flex>
       <Box my={4} />
       {selectedRoom && selectedRoom.duration && duration !== -1 && (
-        <CountdownCircleTimer
-          key={key}
-          size={400}
-          isPlaying={isPlaying}
-          strokeWidth={16}
-          duration={duration}
-          colors={[["#6269A0"], ["#ee4f4f"]]}
-          onComplete={() => {
-            setIsCompleted(true);
-            roomsRef.doc(selectedRoom.id).update({
-              startTimerStamp: -1,
-              status: false,
-            });
-            return [false, 1000];
-          }}
-        >
-          {renderTime}
-        </CountdownCircleTimer>
+        <Box width="500px" height="auto" bg="white">
+          <Countdown date={duration} renderer={renderer} />
+        </Box>
+        // <CountdownCircleTimer
+        //   key={key}
+        //   size={400}
+        //   isPlaying={isPlaying}
+        //   strokeWidth={16}
+        //   duration={duration}
+        //   colors={[["#6269A0"], ["#ee4f4f"]]}
+        //   onComplete={() => {
+        //     setIsCompleted(true);
+        //     roomsRef.doc(selectedRoom.id).update({
+        //       startTimerStamp: -1,
+        //       status: false,
+        //     });
+        //     return [false, 1000];
+        //   }}
+        // >
+        //   {renderTime}
+        // </CountdownCircleTimer>
       )}
       <Box my={4} />
       {selectedRoom && (
