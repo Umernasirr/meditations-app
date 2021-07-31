@@ -30,6 +30,7 @@ const ChatListPopup = ({
   paddingX,
   placement,
   hasBorder,
+  handleGlobalRoom,
   showSearch,
 }) => {
   const [filteredRooms, setFilteredRooms] = useState([]);
@@ -67,6 +68,17 @@ const ChatListPopup = ({
         }
       }
     }
+  };
+
+  const handleSelectRoom = (chat) => {
+    if (chat.isGlobal) {
+      handleGlobalRoom(chat);
+    }
+    console.log(chat, "chat");
+    // if(chat.)
+    setSelectedRoom(chat);
+    setDrawerOpen(false);
+    setChatDrawerOpen(true);
   };
 
   useEffect(() => {
@@ -168,11 +180,7 @@ const ChatListPopup = ({
                       backgroundColor: "whiteAlpha.700",
                       cursor: "pointer",
                     }}
-                    onClick={() => {
-                      setSelectedRoom(chat);
-                      setDrawerOpen(false);
-                      setChatDrawerOpen(true);
-                    }}
+                    onClick={() => handleSelectRoom(chat)}
                     p={2}
                     my={1}
                     align="center"
