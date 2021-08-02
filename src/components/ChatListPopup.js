@@ -227,7 +227,14 @@ const ChatListPopup = ({
                     No Rooms Found...
                   </Text>
 
-                  <Button onClick={() => {}}>Refresh Rooms</Button>
+                  <Button
+                    onClick={() => {
+                      setLoading(!loading);
+                      setLoading(!loading);
+                    }}
+                  >
+                    Refresh Rooms
+                  </Button>
                 </Fragment>
               )}
             </Flex>

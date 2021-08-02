@@ -4,13 +4,12 @@ import "firebase/database";
 import "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB5wO7-j_ZKdHC2cldzH1kmDrPq8j2ajnA",
-  authDomain: "meditation-app-f7b6a.firebaseapp.com",
-  projectId: "meditation-app-f7b6a",
-  storageBucket: "meditation-app-f7b6a.appspot.com",
-  messagingSenderId: "508295680389",
-  appId: "1:508295680389:web:4bdbde9cad4fa1980474ec",
-  measurementId: "G-RD05GM0RHM",
+  apiKey: "AIzaSyB6HAd-wtEYYLzw42WdZaFDCP17V_0p0XQ",
+  authDomain: "meditation-app-new.firebaseapp.com",
+  projectId: "meditation-app-new",
+  storageBucket: "meditation-app-new.appspot.com",
+  messagingSenderId: "604181091303",
+  appId: "1:604181091303:web:8a227c412c164a2d5e6342",
 };
 
 firebase.initializeApp(firebaseConfig);
