@@ -183,6 +183,11 @@ const MeditationChat = ({ selectedRoom, setSelectedRoom }) => {
           value={messageTxt}
           onChange={(e) => setMessageTxt(e.target.value)}
           placeholder="Write a New Message"
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              handleSubmitMessage();
+            }
+          }}
         />
         <Box mx={1} />
         <Button

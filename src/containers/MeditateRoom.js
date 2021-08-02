@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Flex, Box, Spacer } from "@chakra-ui/react";
+import { Flex, Box, Spacer, Text, Button } from "@chakra-ui/react";
 import Header from "../components/Header";
 import firebase from "../firebase";
 import { useSelector } from "react-redux";
@@ -173,13 +173,10 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef
-                  .doc(roomName)
-                  .collection("members")
-                  .add({
-                    createdAt: new Date().getTime(),
-                    user: currentUser,
-                  });
+                roomsRef.doc(roomName).collection("members").add({
+                  createdAt: new Date().getTime(),
+                  user: currentUser,
+                });
 
                 const newRoom = {
                   title: doc.data().title,
@@ -226,13 +223,10 @@ const MeditationRooms = () => {
               if (isMember) {
                 setRoomError("Already a part of this room");
               } else {
-                roomsRef
-                  .doc(chat.id)
-                  .collection("members")
-                  .add({
-                    createdAt: new Date().getTime(),
-                    user: currentUser,
-                  });
+                roomsRef.doc(chat.id).collection("members").add({
+                  createdAt: new Date().getTime(),
+                  user: currentUser,
+                });
 
                 const newRoom = {
                   title: doc.data().title,
@@ -337,13 +331,42 @@ const MeditationRooms = () => {
       />
       <Flex mx={8} direction="column" h="full">
         <Flex h="full" w="full" align="center" justify="center">
-          <CountdownTimer
-            isPlaying={isPlaying}
-            setIsPlaying={setIsPlaying}
-            selectedRoom={selectedRoom}
-            members={members}
-            isAdmin={isAdmin}
-          />
+          {selectedRoom ? (
+            <CountdownTimer
+              isPlaying={isPlaying}
+              setIsPlaying={setIsPlaying}
+              selectedRoom={selectedRoom}
+              members={members}
+              isAdmin={isAdmin}
+            />
+          ) : (
+            <Flex
+              color="white"
+              height="360px"
+              width="360px"
+              borderRadius={"50%"}
+              borderWidth={16}
+              align="center"
+              justify="center"
+              direction="column"
+            >
+              <Button
+                _focus={{ outline: "none" }}
+                _active={{ color: "brand.400" }}
+                variant="link"
+                _hover={{ color: "brand.600" }}
+                fontSize={48}
+                onClick={() => setShowJoinModal(true)}
+              >
+                Join Room
+              </Button>
+              <Box mt={2} />
+              <Text fontSize={20} color="gray.200">
+                {" "}
+                To Get Started{" "}
+              </Text>
+            </Flex>
+          )}
         </Flex>
         <Spacer />
 

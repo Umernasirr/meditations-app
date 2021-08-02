@@ -7,10 +7,16 @@ import {
   Flex,
   Box,
   IconButton,
+  Tooltip,
+  useClipboard,
 } from "@chakra-ui/react";
 
 import React from "react";
-import { AiOutlineMessage, AiOutlineClose } from "react-icons/ai";
+import {
+  AiOutlineMessage,
+  AiOutlineClose,
+  AiOutlineCopy,
+} from "react-icons/ai";
 import MeditationChat from "./MeditationChat";
 
 const ChatMessagesPopup = ({
@@ -21,6 +27,10 @@ const ChatMessagesPopup = ({
   showLeaveGroupModal,
   setShowLeaveGroupModal,
 }) => {
+  const { hasCopied, onCopy } = useClipboard(
+    selectedRoom.id ? selectedRoom.id : ""
+  );
+
   return (
     <Flex px={8}>
       <Popover placement="top" isOpen={isDrawerOpen}>
@@ -48,21 +58,36 @@ const ChatMessagesPopup = ({
               px={2}
               pb={2}
             >
-              <Text>
-                {selectedRoom.title} - {selectedRoom.id}
-              </Text>
+              <Text>{selectedRoom.title}</Text>
               {/* {icon} */}
-              <IconButton
-                ml={2}
-                bg="brand.600"
-                color="white"
-                _hover={{ bg: "brand.800" }}
-                onClick={() => setShowLeaveGroupModal(!showLeaveGroupModal)}
-                _focus={{ outline: "none" }}
-                size="md"
-                borderRadius={32}
-                icon={<AiOutlineClose size="18" />}
-              />
+
+              <Flex>
+                <Tooltip label="Copy Room Code">
+                  <IconButton
+                    bg="brand.600"
+                    color="white"
+                    _hover={{ bg: "brand.800" }}
+                    onClick={onCopy}
+                    _focus={{ outline: "none" }}
+                    size="md"
+                    borderRadius={32}
+                    icon={<AiOutlineCopy size="18" />}
+                  />
+                </Tooltip>
+                <Box mx={1} />
+                <Tooltip label="Exit Group">
+                  <IconButton
+                    bg="red.400"
+                    color="white"
+                    _hover={{ bg: "red.600" }}
+                    onClick={() => setShowLeaveGroupModal(!showLeaveGroupModal)}
+                    _focus={{ outline: "none" }}
+                    size="md"
+                    borderRadius={32}
+                    icon={<AiOutlineClose size="18" />}
+                  />
+                </Tooltip>
+              </Flex>
 
               {/*  */}
             </Flex>
